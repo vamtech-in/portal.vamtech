@@ -3,12 +3,12 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 model User {
-  id                String         @id @default(uuid())
+  id                String         @id @default(auto()) @map("_id") @db.ObjectId
   email             String         @unique
   name              String
   passwordHash      String
@@ -32,7 +32,7 @@ model User {
 }
 
 model Candidate {
-  id           String        @id @default(uuid())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
   refNumber    String        @unique // VT-YYYY-XXX (auto-incrementing per calendar year)
   name         String
   email        String
@@ -49,8 +49,8 @@ model Candidate {
 }
 
 model OfferLetter {
-  id             String    @id @default(uuid())
-  candidateId    String
+  id             String    @id @default(auto()) @map("_id") @db.ObjectId
+  candidateId    String    @db.ObjectId
   candidate      Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
   offerRefNumber String    // VAMT/HR/INT/YYYY-XXX or VAMT/HR/EMP/YYYY-XXX
   type           String    // UNPAID_INTERNSHIP | PAID_INTERNSHIP | FULL_TIME
@@ -60,8 +60,8 @@ model OfferLetter {
 }
 
 model Task {
-  id          String   @id @default(uuid())
-  userId      String
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId      String   @db.ObjectId
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title       String
   description String?
@@ -71,8 +71,8 @@ model Task {
 }
 
 model WorkHistory {
-  id            String   @id @default(uuid())
-  userId        String
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   projectTitle  String
   description   String
@@ -82,8 +82,8 @@ model WorkHistory {
 }
 
 model LeaveRequest {
-  id            String   @id @default(uuid())
-  userId        String
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String   @db.ObjectId
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   leaveType     String   // Paid | Casual | Sick
   startDate     String
@@ -96,8 +96,8 @@ model LeaveRequest {
 }
 
 model Attendance {
-  id        String   @id @default(uuid())
-  userId    String
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   date      String   // YYYY-MM-DD
   checkIn   String?
@@ -107,8 +107,8 @@ model Attendance {
 }
 
 model Document {
-  id         String   @id @default(uuid())
-  userId     String
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId     String   @db.ObjectId
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   title      String
   type       String   // Offer Letter | Appointment Letter | Payslip | ID Proof
@@ -119,7 +119,7 @@ model Document {
 }
 
 model Announcement {
-  id          String   @id @default(uuid())
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
   title       String
   content     String
   isHoliday   Boolean  @default(false)
