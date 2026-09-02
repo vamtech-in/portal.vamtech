@@ -2,7 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import { getSession } from '@/lib/session';
-import { ArrowRight, Code2, ShieldCheck, Zap, Lock, Sparkles, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, ChevronRight } from 'lucide-react';
 
 export default async function HomePage() {
   const session = await getSession();
@@ -13,12 +13,12 @@ export default async function HomePage() {
 
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 lg:px-12 py-12 lg:py-20">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* Left Column: Hero Copy matching vamtech.in screenshot */}
+          {/* Left Column: Hero Copy matching vamtech.in */}
           <div className="lg:col-span-7 space-y-8">
             {/* Top Pill Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-xs font-mono font-bold text-slate-700 shadow-sm">
               <span className="w-2 h-2 rounded-full bg-vamorange-500 animate-pulse" />
-              <span>INTERNAL PORTAL &bull; CANDIDATE & EMPLOYEE GATEWAY</span>
+              <span>CANDIDATE RECRUITMENT & APPLICATION PORTAL</span>
             </div>
 
             {/* Main Headline */}
@@ -32,10 +32,10 @@ export default async function HomePage() {
 
             {/* Description */}
             <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-sans font-normal">
-              VAMTech&apos;s premier internal software application system. We enable candidates to submit applications, track Candidate Reference Numbers (<span className="font-mono text-slate-900 font-bold">VT-2026-XXX</span>), access employee dashboards, and generate HR offer letters.
+              Lucknow&apos;s premier custom software development agency application system. Submit your job application to receive a unique Candidate Reference Number (<span className="font-mono text-slate-900 font-bold">VT-2026-XXX</span>) and track hiring status.
             </p>
 
-            {/* Action Buttons matching screenshot */}
+            {/* Public Action Buttons (Staff Login hidden from screen) */}
             <div className="flex flex-wrap items-center gap-4 pt-2">
               <Link
                 href="/apply"
@@ -51,17 +51,10 @@ export default async function HomePage() {
               >
                 Track Status (VT-2026-XXX)
               </Link>
-
-              <Link
-                href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/login'}
-                className="px-6 py-4 rounded-2xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:border-slate-300 transition shadow-sm"
-              >
-                {session ? 'Workspace Portal' : 'Staff Login'}
-              </Link>
             </div>
           </div>
 
-          {/* Right Column: Code Window & Floating Badges matching screenshot */}
+          {/* Right Column: Code Window & Floating Badges */}
           <div className="lg:col-span-5 relative">
             {/* Top Floating Badge */}
             <div className="absolute -top-6 left-6 z-20 bg-white border border-slate-200/80 px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2.5">
@@ -91,7 +84,7 @@ export default async function HomePage() {
 
               {/* Code Snippet */}
               <div className="space-y-1.5 pt-2 text-[11px] leading-relaxed text-slate-300">
-                <p className="text-slate-500">// Launching VAMTech Candidate System</p>
+                <p className="text-slate-500">// Launching VAMTech Candidate Engine</p>
                 <p>
                   <span className="text-rose-400 font-bold">const</span> candidate ={' '}
                   <span className="text-amber-300">createApplicant</span>({'{'}
@@ -109,7 +102,7 @@ export default async function HomePage() {
                   ownership: <span className="text-sky-400">100%</span>,
                 </p>
                 <p className="pl-4">
-                  security: <span className="text-sky-400">&apos;Signed Document URLs&apos;</span>,
+                  security: <span className="text-sky-400">&apos;Encrypted Verification&apos;</span>,
                 </p>
                 <p>{'});'}</p>
                 <p className="text-slate-500 pt-2">// Deploy to production</p>
@@ -125,7 +118,7 @@ export default async function HomePage() {
                 </div>
                 <div>
                   <span className="text-[10px] font-bold text-slate-800 block uppercase">DIRECT ACCESS</span>
-                  <span className="text-[10px] text-slate-500 block">No Middlemen / Fast Sync</span>
+                  <span className="text-[10px] text-slate-500 block">Fast Sync</span>
                 </div>
               </div>
 
@@ -138,30 +131,6 @@ export default async function HomePage() {
                   <span className="text-[10px] text-slate-500 block">Protected Records</span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Testing Credentials Section */}
-        <div className="mt-20 glass-card p-8 rounded-3xl border border-slate-200">
-          <h4 className="font-display text-sm font-bold text-[#0f172a] uppercase tracking-wider mb-4">
-            Quick Testing Credentials (Demo Mode)
-          </h4>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              <span className="font-bold text-[#0f172a] block">HR Admin</span>
-              <span className="text-slate-600 block mt-1 font-mono">admin@vamtech.in</span>
-              <span className="text-slate-600 block font-mono">Admin@123</span>
-            </div>
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              <span className="font-bold text-[#0f172a] block">Existing Employee</span>
-              <span className="text-slate-600 block mt-1 font-mono">employee@vamtech.in</span>
-              <span className="text-slate-600 block font-mono">Emp@123</span>
-            </div>
-            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
-              <span className="font-bold text-[#0f172a] block">New Hire (Force Password Reset)</span>
-              <span className="text-slate-600 block mt-1 font-mono">new.hire@vamtech.in</span>
-              <span className="text-slate-600 block font-mono">Temp@123</span>
             </div>
           </div>
         </div>
