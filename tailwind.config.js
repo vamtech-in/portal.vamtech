@@ -10,10 +10,10 @@ module.exports = {
     extend: {
       colors: {
         vamnavy: {
-          950: '#071325',
+          950: '#07111e',
           900: '#0b1f3a', // Base VAMTech dark navy
-          800: '#152e52',
-          700: '#1e3e6b',
+          800: '#132847',
+          700: '#1b3861',
           600: '#274f87',
           500: '#3466ae',
           400: '#4d83cd',
@@ -29,7 +29,8 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
       },
     },
   },

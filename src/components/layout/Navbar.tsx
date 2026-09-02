@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShieldAlert, LogOut, User as UserIcon, Building2 } from 'lucide-react';
+import { LogOut, User as UserIcon, Building2, Sparkles } from 'lucide-react';
 import { UserSession } from '@/lib/session';
 
 interface NavbarProps {
@@ -24,22 +24,23 @@ export default function Navbar({ session }: NavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-vamnavy-950/90 backdrop-blur-md border-b border-vamnavy-800 px-4 lg:px-8 py-3">
+    <header className="sticky top-0 z-40 bg-[#07111e]/90 backdrop-blur-xl border-b border-white/10 px-4 lg:px-8 py-3.5 shadow-2xl">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
         {/* Brand & Subdomain Badge */}
         <div className="flex items-center gap-3">
-          <Link href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/'} className="flex items-center gap-2.5 group">
-            <div className="w-9 h-9 rounded-lg bg-gradient-to-tr from-vamnavy-800 to-vamnavy-700 border border-vamnavy-600 flex items-center justify-center text-vamgold-400 group-hover:scale-105 transition">
-              <Building2 className="w-5 h-5" />
+          <Link href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/'} className="flex items-center gap-3 group">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0b1f3a] via-[#132847] to-[#1b3861] border border-white/15 flex items-center justify-center text-vamgold-400 group-hover:scale-105 group-hover:border-vamgold-500/50 shadow-[0_0_15px_rgba(229,169,60,0.15)] transition-all duration-300">
+              <Building2 className="w-5 h-5 text-vamgold-400" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-extrabold text-lg text-white tracking-tight">VAMTech</span>
-                <span className="text-[10px] font-mono font-bold bg-vamnavy-800 text-vamgold-400 px-2 py-0.5 rounded border border-vamgold-500/30">
+                <span className="font-display font-black text-xl text-white tracking-tight">VAMTech</span>
+                <span className="text-[10px] font-mono font-bold bg-vamgold-500/10 text-vamgold-400 px-2 py-0.5 rounded border border-vamgold-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(229,169,60,0.2)]">
+                  <Sparkles className="w-2.5 h-2.5" />
                   PORTAL
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 font-mono">portal.vamtech.in</p>
+              <p className="text-[10px] text-slate-400 font-mono tracking-wider">portal.vamtech.in</p>
             </div>
           </Link>
         </div>
@@ -50,19 +51,19 @@ export default function Navbar({ session }: NavbarProps) {
             <div className="flex items-center gap-3 text-xs">
               <Link
                 href="/status"
-                className="text-slate-300 hover:text-white transition hidden sm:inline-block font-medium"
+                className="text-slate-300 hover:text-white transition hidden sm:inline-block font-medium px-3 py-1.5 rounded-lg hover:bg-white/5"
               >
                 Track Status
               </Link>
               <Link
                 href="/apply"
-                className="text-slate-300 hover:text-white transition hidden sm:inline-block font-medium"
+                className="text-slate-300 hover:text-white transition hidden sm:inline-block font-medium px-3 py-1.5 rounded-lg hover:bg-white/5"
               >
                 Apply for Job
               </Link>
               <Link
                 href="/login"
-                className="bg-vamgold-500 hover:bg-vamgold-400 text-vamnavy-950 font-bold px-4 py-2 rounded-lg transition"
+                className="btn-primary px-4 py-2 rounded-lg text-xs font-bold transition"
               >
                 Employee Login
               </Link>
@@ -70,14 +71,14 @@ export default function Navbar({ session }: NavbarProps) {
           ) : (
             <div className="flex items-center gap-4">
               {/* Role Badge */}
-              <div className="flex items-center gap-2 bg-vamnavy-900 border border-vamnavy-700 px-3 py-1.5 rounded-lg text-xs">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-slate-300 font-medium">{session.name}</span>
+              <div className="flex items-center gap-2.5 bg-[#0b1f3a]/80 border border-white/10 px-3.5 py-1.5 rounded-xl text-xs shadow-inner">
+                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
+                <span className="text-slate-200 font-semibold">{session.name}</span>
                 <span
-                  className={`px-1.5 py-0.5 text-[10px] font-bold rounded uppercase ${
+                  className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-md uppercase tracking-wider ${
                     session.role === 'admin'
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                      : 'bg-sky-500/20 text-sky-300 border border-sky-500/30'
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
+                      : 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]'
                   }`}
                 >
                   {session.role}
@@ -87,11 +88,11 @@ export default function Navbar({ session }: NavbarProps) {
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-rose-400 bg-vamnavy-900 hover:bg-rose-500/10 border border-vamnavy-800 hover:border-rose-500/30 px-3 py-1.5 rounded-lg transition"
+                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-rose-300 bg-[#0b1f3a]/80 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 px-3.5 py-1.5 rounded-xl transition-all"
                 title="Log Out"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline font-medium">Logout</span>
               </button>
             </div>
           )}

@@ -1,6 +1,19 @@
 import type { Metadata } from 'next';
+import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 import DevEmailModal from '@/components/common/DevEmailModal';
+
+const inter = Inter({
+  subsets: ['latin'],
+  variable: '--font-inter',
+  display: 'swap',
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-outfit',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'VAMTech Internal Portal | portal.vamtech.in',
@@ -23,11 +36,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className={`dark ${inter.variable} ${outfit.variable}`}>
       <head>
         <meta name="robots" content="noindex, nofollow" />
       </head>
-      <body className="bg-vamnavy-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-vamgold-500 selection:text-vamnavy-950">
+      <body className="bg-[#07111e] text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-vamgold-500 selection:text-vamnavy-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(30,62,107,0.3),rgba(7,17,30,1))]">
         {children}
         <DevEmailModal />
       </body>

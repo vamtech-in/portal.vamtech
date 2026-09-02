@@ -4,15 +4,19 @@
 
 @layer base {
   :root {
-    --background: 11 31 58; /* #0b1f3a */
+    --background: 7 17 30; /* #07111e */
     --foreground: 248 250 252;
   }
   
   body {
-    background-color: #0b1f3a;
+    background-color: #07111e;
     color: #f8fafc;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: var(--font-outfit), system-ui, -apple-system, sans-serif;
   }
 }
 
@@ -22,33 +26,43 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #071325;
+  background: #050d18;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e3e6b;
+  background: #1b3861;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #274f87;
 }
 
-/* Custom Glassmorphism UI Utilities */
+/* Premium Glassmorphism UI Utilities */
 .glass-panel {
-  background: rgba(21, 46, 82, 0.7);
-  backdrop-filter: blur(12px);
+  background: rgba(11, 31, 58, 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 0.75rem;
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(229, 169, 60, 0.35);
+  box-shadow: 0 12px 40px -10px rgba(229, 169, 60, 0.15);
+  transform: translateY(-2px);
 }
 
 .glass-card {
-  background: rgba(11, 31, 58, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+  background: rgba(7, 17, 30, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
 }
 
 .glass-input {
-  background: rgba(7, 19, 37, 0.8);
-  border: 1px solid #1e3e6b;
+  background: rgba(5, 13, 24, 0.8);
+  border: 1px solid #1b3861;
   color: #ffffff;
   transition: all 0.2s ease;
 }
@@ -56,37 +70,52 @@
 .glass-input:focus {
   outline: none;
   border-color: #e5a93c;
-  box-shadow: 0 0 0 2px rgba(229, 169, 60, 0.2);
+  box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.15);
+}
+
+/* Gradient Buttons */
+.btn-primary {
+  background: linear-gradient(135deg, #f2bd57 0%, #e5a93c 100%);
+  color: #07111e;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(229, 169, 60, 0.25);
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #f5c86e 0%, #f2bd57 100%);
+  box-shadow: 0 6px 20px rgba(229, 169, 60, 0.4);
+  transform: translateY(-1px);
 }
 
 /* Badges */
 .badge-applied {
-  background: rgba(56, 189, 248, 0.15);
+  background: rgba(56, 189, 248, 0.12);
   color: #38bdf8;
   border: 1px solid rgba(56, 189, 248, 0.3);
 }
 .badge-interviewed {
-  background: rgba(168, 85, 247, 0.15);
+  background: rgba(192, 132, 252, 0.12);
   color: #c084fc;
-  border: 1px solid rgba(168, 85, 247, 0.3);
+  border: 1px solid rgba(192, 132, 252, 0.3);
 }
 .badge-selected {
-  background: rgba(234, 179, 8, 0.15);
+  background: rgba(250, 204, 21, 0.12);
   color: #facc15;
-  border: 1px solid rgba(234, 179, 8, 0.3);
+  border: 1px solid rgba(250, 204, 21, 0.3);
 }
 .badge-offer {
-  background: rgba(249, 115, 22, 0.15);
+  background: rgba(251, 146, 60, 0.12);
   color: #fb923c;
-  border: 1px solid rgba(249, 115, 22, 0.3);
+  border: 1px solid rgba(251, 146, 60, 0.3);
 }
 .badge-joined {
-  background: rgba(34, 197, 94, 0.15);
+  background: rgba(74, 222, 128, 0.12);
   color: #4ade80;
-  border: 1px solid rgba(34, 197, 94, 0.3);
+  border: 1px solid rgba(74, 222, 128, 0.3);
 }
 .badge-rejected {
-  background: rgba(239, 68, 68, 0.15);
+  background: rgba(248, 113, 113, 0.12);
   color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  border: 1px solid rgba(248, 113, 113, 0.3);
 }
