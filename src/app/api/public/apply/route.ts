@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { generateCandidateRefNumber } from '@/lib/candidate-ref';
-import { sendApplicationConfirmationEmail } from '@/lib/email';
+import { sendApplicationConfirmationEmail, sendHiringNotificationToHR } from '@/lib/email';
 import { checkRateLimit } from '@/lib/rate-limit';
 
 export async function POST(request: Request) {
@@ -27,6 +27,7 @@ export async function POST(request: Request) {
     // Auto-generate Candidate Ref Number VT-YYYY-XXX
     const refNumber = await generateCandidateRefNumber();
 
+    // Save candidate to MongoDB database
     const candidate = await db.candidate.create({
       data: {
         refNumber,
@@ -41,13 +42,25 @@ export async function POST(request: Request) {
       },
     });
 
-    // Send confirmation email
+    // 1. Send confirmation email to candidate
     await sendApplicationConfirmationEmail(candidate.email, candidate.name, candidate.refNumber, candidate.roleApplied);
+
+    // 2. Send instant hiring notification email directly to HR inbox (admin@vamtech.in)
+    await sendHiringNotificationToHR({
+      refNumber: candidate.refNumber,
+      name: candidate.name,
+      email: candidate.email,
+      phone: candidate.phone,
+      roleApplied: candidate.roleApplied,
+      linkedin: candidate.linkedin,
+      coverNote: candidate.coverNote,
+      resumeUrl: candidate.resumeUrl,
+    });
 
     return NextResponse.json({
       success: true,
       refNumber: candidate.refNumber,
-      message: 'Application submitted successfully! Your Candidate Reference Number has been emailed to you.',
+      message: 'Application submitted successfully! Notifications sent to candidate and HR.',
     });
   } catch (error) {
     console.error('Application submission error', error);
