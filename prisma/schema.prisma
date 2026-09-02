@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id                String         @id @default(uuid())
+  email             String         @unique
+  name              String
+  passwordHash      String
+  role              String         @default("employee") // "employee" | "admin"
+  mustResetPassword Boolean        @default(false)
+  refNumber         String?        @unique // VT-YYYY-XXX carried forward as Employee ID
+  department        String?
+  designation       String?
+  joiningDate       String?
+  phone             String?
+  emergencyContact  String?
+  photoUrl          String?
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  tasks             Task[]
+  workHistory       WorkHistory[]
+  leaveRequests     LeaveRequest[]
+  attendanceLogs    Attendance[]
+  documents         Document[]
+}
+
+model Candidate {
+  id           String        @id @default(uuid())
+  refNumber    String        @unique // VT-YYYY-XXX (auto-incrementing per calendar year)
+  name         String
+  email        String
+  phone        String
+  roleApplied  String
+  resumeUrl    String?
+  linkedin     String?
+  coverNote    String?
+  status       String        @default("Applied") // Applied | Interviewed | Selected | Offer Sent | Joined | Rejected
+  appliedAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  offerLetters OfferLetter[]
+}
+
+model OfferLetter {
+  id             String    @id @default(uuid())
+  candidateId    String
+  candidate      Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+  offerRefNumber String    // VAMT/HR/INT/YYYY-XXX or VAMT/HR/EMP/YYYY-XXX
+  type           String    // UNPAID_INTERNSHIP | PAID_INTERNSHIP | FULL_TIME
+  detailsJson    String    // Store full form parameters as JSON
+  pdfUrl         String?
+  createdAt      DateTime  @default(now())
+}
+
+model Task {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  status      String   @default("To Do") // To Do | In Progress | Done
+  dueDate     String?
+  createdAt   DateTime @default(now())
+}
+
+model WorkHistory {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  projectTitle  String
+  description   String
+  skills        String
+  dateCompleted String?
+  createdAt     DateTime @default(now())
+}
+
+model LeaveRequest {
+  id            String   @id @default(uuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  leaveType     String   // Paid | Casual | Sick
+  startDate     String
+  endDate       String
+  reason        String
+  status        String   @default("Pending") // Pending | Approved | Rejected
+  reviewedBy    String?
+  reviewComment String?
+  createdAt     DateTime @default(now())
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      String   // YYYY-MM-DD
+  checkIn   String?
+  checkOut  String?
+  status    String   @default("Present") // Present | Half Day | Absent
+  createdAt DateTime @default(now())
+}
+
+model Document {
+  id         String   @id @default(uuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title      String
+  type       String   // Offer Letter | Appointment Letter | Payslip | ID Proof
+  fileUrl    String
+  fileSize   String?
+  uploadedBy String
+  createdAt  DateTime @default(now())
+}
+
+model Announcement {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  isHoliday   Boolean  @default(false)
+  holidayDate String?
+  authorName  String   @default("VAMTech HR")
+  createdAt   DateTime @default(now())
+}

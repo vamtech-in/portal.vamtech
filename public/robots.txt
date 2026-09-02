@@ -1,0 +1,3 @@
+# Block ALL crawling on portal.vamtech.in
+User-agent: *
+Disallow: /
