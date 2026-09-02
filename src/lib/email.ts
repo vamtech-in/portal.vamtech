@@ -36,8 +36,9 @@ export async function sendEmail({
 
   if (resend) {
     try {
+      const fromAddress = process.env.RESEND_FROM_EMAIL || 'VAMTech Portal <onboarding@resend.dev>';
       const response = await resend.emails.send({
-        from: 'VAMTech Portal <portal@vamtech.in>',
+        from: fromAddress,
         to: [to],
         subject,
         html,
@@ -95,7 +96,7 @@ export async function sendApplicationConfirmationEmail(email: string, name: stri
 }
 
 /**
- * 2. Instant Email Notification Sent Directly to HR (admin@vamtech.in)
+ * 2. Instant Email Notification Sent Directly to HR (contactvamtech@gmail.com)
  */
 export async function sendHiringNotificationToHR({
   refNumber,
@@ -116,7 +117,7 @@ export async function sendHiringNotificationToHR({
   coverNote?: string | null;
   resumeUrl?: string | null;
 }) {
-  const hrEmail = process.env.HR_EMAIL || 'admin@vamtech.in';
+  const hrEmail = process.env.HR_EMAIL || 'contactvamtech@gmail.com';
 
   const html = `
     <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #0f172a; border: 1px solid #e2e8f0; padding: 30px; border-radius: 12px;">
