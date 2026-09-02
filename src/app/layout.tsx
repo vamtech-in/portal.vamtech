@@ -36,11 +36,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`dark ${inter.variable} ${outfit.variable}`}>
+    <html lang="en">
       <head>
         <meta name="robots" content="noindex, nofollow" />
       </head>
-      <body className="bg-[#07111e] text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-vamgold-500 selection:text-vamnavy-950 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(30,62,107,0.3),rgba(7,17,30,1))]">
+      <body className="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-vamorange-500 selection:text-white">
         {children}
         <DevEmailModal />
       </body>

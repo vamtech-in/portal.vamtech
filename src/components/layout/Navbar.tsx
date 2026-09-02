@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, Sparkles } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { UserSession } from '@/lib/session';
 import VamtechLogo from '@/components/common/VamtechLogo';
 
@@ -25,47 +25,49 @@ export default function Navbar({ session }: NavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#07111e]/90 backdrop-blur-xl border-b border-white/10 px-4 lg:px-8 py-3 shadow-2xl">
+    <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-200/80 px-6 lg:px-12 py-4 shadow-sm">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
-        {/* VAMTech Brand Logo Header */}
+        {/* Brand Logo matching vamtech.in */}
         <Link href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/'} className="group">
           <VamtechLogo size="md" />
         </Link>
 
-        {/* User Status / Quick Actions */}
+        {/* Center / Navigation Links */}
+        {!session && (
+          <nav className="hidden md:flex items-center gap-8 text-sm font-semibold text-slate-700">
+            <Link href="/" className="hover:text-vamorange-500 transition">
+              Home
+            </Link>
+            <Link href="/apply" className="hover:text-vamorange-500 transition">
+              Apply
+            </Link>
+            <Link href="/status" className="hover:text-vamorange-500 transition">
+              Track Status
+            </Link>
+          </nav>
+        )}
+
+        {/* User Status / Action Pill Button matching "Hire Us Now" */}
         <div className="flex items-center gap-4">
           {!session ? (
-            <div className="flex items-center gap-3 text-xs">
-              <Link
-                href="/status"
-                className="text-slate-300 hover:text-white transition hidden sm:inline-block font-medium px-3 py-1.5 rounded-lg hover:bg-white/5"
-              >
-                Track Status
-              </Link>
-              <Link
-                href="/apply"
-                className="text-slate-300 hover:text-white transition hidden sm:inline-block font-medium px-3 py-1.5 rounded-lg hover:bg-white/5"
-              >
-                Apply for Job
-              </Link>
-              <Link
-                href="/login"
-                className="btn-primary px-4 py-2 rounded-xl text-xs font-bold transition"
-              >
-                Employee Login
-              </Link>
-            </div>
+            <Link
+              href="/login"
+              className="btn-navy px-6 py-2.5 rounded-full text-xs font-bold transition flex items-center gap-2"
+            >
+              <span className="w-2 h-2 rounded-full bg-vamorange-500 shadow-[0_0_8px_#f9572a] animate-pulse" />
+              <span>Employee Login</span>
+            </Link>
           ) : (
-            <div className="flex items-center gap-4">
-              {/* Role Badge */}
-              <div className="flex items-center gap-2.5 bg-[#0b1f3a]/80 border border-white/10 px-3.5 py-1.5 rounded-xl text-xs shadow-inner">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse" />
-                <span className="text-slate-200 font-semibold">{session.name}</span>
+            <div className="flex items-center gap-3">
+              {/* Role Pill */}
+              <div className="flex items-center gap-2 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-full text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-slate-800 font-semibold">{session.name}</span>
                 <span
-                  className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-md uppercase tracking-wider ${
+                  className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-full uppercase tracking-wider ${
                     session.role === 'admin'
-                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-[0_0_10px_rgba(245,158,11,0.2)]'
-                      : 'bg-sky-500/20 text-sky-300 border border-sky-500/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]'
+                      ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                      : 'bg-sky-100 text-sky-800 border border-sky-300'
                   }`}
                 >
                   {session.role}
@@ -75,11 +77,11 @@ export default function Navbar({ session }: NavbarProps) {
               {/* Logout Button */}
               <button
                 onClick={handleLogout}
-                className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-rose-300 bg-[#0b1f3a]/80 hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/30 px-3.5 py-1.5 rounded-xl transition-all"
+                className="flex items-center gap-1.5 text-xs text-slate-600 hover:text-rose-600 bg-slate-100 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 px-3.5 py-1.5 rounded-full transition-all font-semibold"
                 title="Log Out"
               >
                 <LogOut className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline font-medium">Logout</span>
+                <span className="hidden sm:inline">Logout</span>
               </button>
             </div>
           )}

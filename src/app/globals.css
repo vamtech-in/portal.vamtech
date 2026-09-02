@@ -4,13 +4,13 @@
 
 @layer base {
   :root {
-    --background: 7 17 30; /* #07111e */
-    --foreground: 248 250 252;
+    --background: 248 250 252; /* #f8fafc */
+    --foreground: 15 23 42; /* #0f172a */
   }
   
   body {
-    background-color: #07111e;
-    color: #f8fafc;
+    background-color: #f8fafc;
+    color: #0f172a;
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
     min-height: 100vh;
   }
@@ -26,96 +26,108 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #050d18;
+  background: #f1f5f9;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1b3861;
+  background: #cbd5e1;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #274f87;
+  background: #94a3b8;
 }
 
-/* Premium Glassmorphism UI Utilities */
+/* VAMTech Light Theme UI Panels */
 .glass-panel {
-  background: rgba(11, 31, 58, 0.65);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 1rem;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .glass-panel-hover:hover {
-  border-color: rgba(229, 169, 60, 0.35);
-  box-shadow: 0 12px 40px -10px rgba(229, 169, 60, 0.15);
-  transform: translateY(-2px);
+  border-color: #f9572a;
+  box-shadow: 0 15px 35px -10px rgba(249, 87, 42, 0.15);
+  transform: translateY(-3px);
 }
 
 .glass-card {
-  background: rgba(7, 17, 30, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.04);
 }
 
 .glass-input {
-  background: rgba(5, 13, 24, 0.8);
-  border: 1px solid #1b3861;
-  color: #ffffff;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  color: #0f172a;
   transition: all 0.2s ease;
 }
 
 .glass-input:focus {
   outline: none;
-  border-color: #e5a93c;
-  box-shadow: 0 0 0 3px rgba(229, 169, 60, 0.15);
+  border-color: #f9572a;
+  box-shadow: 0 0 0 3px rgba(249, 87, 42, 0.15);
 }
 
-/* Gradient Buttons */
-.btn-primary {
-  background: linear-gradient(135deg, #f2bd57 0%, #e5a93c 100%);
-  color: #07111e;
+/* VAMTech Primary Orange CTA Button */
+.btn-orange {
+  background: linear-gradient(135deg, #ff6f47 0%, #f9572a 100%);
+  color: #ffffff;
   font-weight: 700;
-  box-shadow: 0 4px 15px rgba(229, 169, 60, 0.25);
+  box-shadow: 0 8px 25px -5px rgba(249, 87, 42, 0.4);
   transition: all 0.2s ease;
 }
 
-.btn-primary:hover {
-  background: linear-gradient(135deg, #f5c86e 0%, #f2bd57 100%);
-  box-shadow: 0 6px 20px rgba(229, 169, 60, 0.4);
-  transform: translateY(-1px);
+.btn-orange:hover {
+  background: linear-gradient(135deg, #f9572a 0%, #e0461b 100%);
+  box-shadow: 0 12px 30px -5px rgba(249, 87, 42, 0.55);
+  transform: translateY(-1.5px);
 }
 
-/* Badges */
+/* VAMTech Dark Navy Button */
+.btn-navy {
+  background: #0f172a;
+  color: #ffffff;
+  font-weight: 700;
+  box-shadow: 0 6px 20px -5px rgba(15, 23, 42, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-navy:hover {
+  background: #1e293b;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.45);
+  transform: translateY(-1.5px);
+}
+
+/* Status Badges */
 .badge-applied {
-  background: rgba(56, 189, 248, 0.12);
-  color: #38bdf8;
-  border: 1px solid rgba(56, 189, 248, 0.3);
+  background: #e0f2fe;
+  color: #0284c7;
+  border: 1px solid #bae6fd;
 }
 .badge-interviewed {
-  background: rgba(192, 132, 252, 0.12);
-  color: #c084fc;
-  border: 1px solid rgba(192, 132, 252, 0.3);
+  background: #f3e8ff;
+  color: #9333ea;
+  border: 1px solid #e9d5ff;
 }
 .badge-selected {
-  background: rgba(250, 204, 21, 0.12);
-  color: #facc15;
-  border: 1px solid rgba(250, 204, 21, 0.3);
+  background: #fef9c3;
+  color: #ca8a04;
+  border: 1px solid #fef08a;
 }
 .badge-offer {
-  background: rgba(251, 146, 60, 0.12);
-  color: #fb923c;
-  border: 1px solid rgba(251, 146, 60, 0.3);
+  background: #ffedd5;
+  color: #ea580c;
+  border: 1px solid #fed7aa;
 }
 .badge-joined {
-  background: rgba(74, 222, 128, 0.12);
-  color: #4ade80;
-  border: 1px solid rgba(74, 222, 128, 0.3);
+  background: #dcfce7;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
 }
 .badge-rejected {
-  background: rgba(248, 113, 113, 0.12);
-  color: #f87171;
-  border: 1px solid rgba(248, 113, 113, 0.3);
+  background: #fee2e2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }

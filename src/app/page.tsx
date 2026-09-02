@@ -2,126 +2,172 @@ import React from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
 import { getSession } from '@/lib/session';
-import { ShieldCheck, FileCheck, Search, LogIn, Building2, UserCheck, ArrowRight, Sparkles, ChevronRight } from 'lucide-react';
+import { ArrowRight, Code2, ShieldCheck, Zap, Lock, Sparkles, CheckCircle2 } from 'lucide-react';
 
 export default async function HomePage() {
   const session = await getSession();
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07111e] text-slate-100 selection:bg-vamgold-500 selection:text-vamnavy-950">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
       <Navbar session={session} />
 
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-16 flex flex-col items-center justify-center">
-        {/* Banner Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#0b1f3a]/80 border border-vamgold-500/30 text-vamgold-400 text-xs font-mono font-medium mb-8 shadow-[0_0_20px_rgba(229,169,60,0.15)] animate-pulse">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <span>VAMTech Pvt Ltd Internal Gateway &bull; portal.vamtech.in</span>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 lg:px-12 py-12 lg:py-20">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          {/* Left Column: Hero Copy matching vamtech.in screenshot */}
+          <div className="lg:col-span-7 space-y-8">
+            {/* Top Pill Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-slate-200 text-xs font-mono font-bold text-slate-700 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-vamorange-500 animate-pulse" />
+              <span>INTERNAL PORTAL &bull; CANDIDATE & EMPLOYEE GATEWAY</span>
+            </div>
+
+            {/* Main Headline */}
+            <div className="space-y-2">
+              <h1 className="font-display text-5xl sm:text-7xl font-black tracking-tight leading-[1.05] text-[#0f172a]">
+                Software <br />
+                Transform <br />
+                <span className="text-[#f9572a]">Accelerate</span>
+              </h1>
+            </div>
+
+            {/* Description */}
+            <p className="text-base sm:text-lg text-slate-600 max-w-xl leading-relaxed font-sans font-normal">
+              VAMTech&apos;s premier internal software application system. We enable candidates to submit applications, track Candidate Reference Numbers (<span className="font-mono text-slate-900 font-bold">VT-2026-XXX</span>), access employee dashboards, and generate HR offer letters.
+            </p>
+
+            {/* Action Buttons matching screenshot */}
+            <div className="flex flex-wrap items-center gap-4 pt-2">
+              <Link
+                href="/apply"
+                className="btn-orange px-8 py-4 rounded-2xl text-sm font-bold flex items-center gap-2 transition"
+              >
+                <span>Start Your Application</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+
+              <Link
+                href="/status"
+                className="btn-navy px-8 py-4 rounded-2xl text-sm font-bold transition"
+              >
+                Track Status (VT-2026-XXX)
+              </Link>
+
+              <Link
+                href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/login'}
+                className="px-6 py-4 rounded-2xl text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:border-slate-300 transition shadow-sm"
+              >
+                {session ? 'Workspace Portal' : 'Staff Login'}
+              </Link>
+            </div>
+          </div>
+
+          {/* Right Column: Code Window & Floating Badges matching screenshot */}
+          <div className="lg:col-span-5 relative">
+            {/* Top Floating Badge */}
+            <div className="absolute -top-6 left-6 z-20 bg-white border border-slate-200/80 px-4 py-2 rounded-2xl shadow-lg flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-orange-100 flex items-center justify-center text-vamorange-500 font-bold text-xs">
+                ⚡
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-bold text-slate-400 block uppercase">2-4 WEEKS</span>
+                <span className="text-xs font-bold text-slate-800">Rapid Recruitment</span>
+              </div>
+            </div>
+
+            {/* Code Window Card matching screenshot */}
+            <div className="bg-[#0f172a] rounded-3xl p-6 shadow-2xl border border-slate-800 text-slate-200 space-y-4 font-mono text-xs relative overflow-hidden">
+              {/* Window Controls */}
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                </div>
+                <span className="text-[10px] text-slate-500">vamtech-portal-engine.ts</span>
+                <span className="text-[10px] bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold">
+                  LIVE
+                </span>
+              </div>
+
+              {/* Code Snippet */}
+              <div className="space-y-1.5 pt-2 text-[11px] leading-relaxed text-slate-300">
+                <p className="text-slate-500">// Launching VAMTech Candidate System</p>
+                <p>
+                  <span className="text-rose-400 font-bold">const</span> candidate ={' '}
+                  <span className="text-amber-300">createApplicant</span>({'{'}
+                </p>
+                <p className="pl-4">
+                  ref: <span className="text-emerald-400">&apos;VT-2026-001&apos;</span>,
+                </p>
+                <p className="pl-4">
+                  role: <span className="text-emerald-400">&apos;Full Stack Engineer&apos;</span>,
+                </p>
+                <p className="pl-4">
+                  status: <span className="text-vamorange-500 font-bold">&apos;Applied&apos;</span>,
+                </p>
+                <p className="pl-4">
+                  ownership: <span className="text-sky-400">100%</span>,
+                </p>
+                <p className="pl-4">
+                  security: <span className="text-sky-400">&apos;Signed Document URLs&apos;</span>,
+                </p>
+                <p>{'});'}</p>
+                <p className="text-slate-500 pt-2">// Deploy to production</p>
+                <p className="text-emerald-400 font-bold">deployToPortal({'{ status: "Online" }'});</p>
+              </div>
+            </div>
+
+            {/* Bottom Floating Badges matching screenshot */}
+            <div className="flex items-center gap-3 mt-4">
+              <div className="flex-1 bg-white border border-slate-200 px-4 py-3 rounded-2xl shadow-md flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-sky-100 flex items-center justify-center text-sky-600 font-bold text-xs shrink-0">
+                  &lt;/&gt;
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-800 block uppercase">DIRECT ACCESS</span>
+                  <span className="text-[10px] text-slate-500 block">No Middlemen / Fast Sync</span>
+                </div>
+              </div>
+
+              <div className="flex-1 bg-white border border-slate-200 px-4 py-3 rounded-2xl shadow-md flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600 font-bold text-xs shrink-0">
+                  🛡️
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold text-slate-800 block uppercase">100% SECURITY</span>
+                  <span className="text-[10px] text-slate-500 block">Protected Records</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Hero Title */}
-        <h1 className="font-display text-4xl sm:text-6xl font-black text-center text-white tracking-tight leading-tight max-w-4xl">
-          Engineered for Performance.{' '}
-          <span className="bg-gradient-to-r from-vamgold-400 via-amber-300 to-vamgold-500 bg-clip-text text-transparent">
-            Built for Talent.
-          </span>
-        </h1>
-        <p className="text-base sm:text-xl text-slate-300 text-center max-w-2xl mt-6 leading-relaxed font-sans font-normal">
-          Official VAMTech internal portal for candidate tracking, employee self-service workspace, and HR management.
-        </p>
-
-        {/* Action Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full mt-16">
-          {/* Card 1: Job Applicants */}
-          <div className="glass-panel p-8 flex flex-col justify-between glass-panel-hover group">
-            <div>
-              <div className="w-14 h-14 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400 mb-6 group-hover:scale-110 group-hover:border-sky-400/50 shadow-[0_0_20px_rgba(56,189,248,0.15)] transition-all duration-300">
-                <FileCheck className="w-7 h-7" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-white mb-3">Job Applicants</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Submit your application to receive an official Candidate Reference Number (<span className="font-mono text-vamgold-400">VT-YYYY-XXX</span>).
-              </p>
-            </div>
-            <Link
-              href="/apply"
-              className="inline-flex items-center justify-between w-full bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-300 font-bold px-4 py-3 rounded-xl text-xs transition-all duration-200"
-            >
-              <span>Apply for Open Roles</span>
-              <ChevronRight className="w-4 h-4 text-sky-400 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Card 2: Track Status */}
-          <div className="glass-panel p-8 flex flex-col justify-between glass-panel-hover group">
-            <div>
-              <div className="w-14 h-14 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400 mb-6 group-hover:scale-110 group-hover:border-amber-400/50 shadow-[0_0_20px_rgba(245,158,11,0.15)] transition-all duration-300">
-                <Search className="w-7 h-7" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-white mb-3">Check Status</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Lookup real-time hiring status using your Reference Number and Email. No login required.
-              </p>
-            </div>
-            <Link
-              href="/status"
-              className="inline-flex items-center justify-between w-full bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 font-bold px-4 py-3 rounded-xl text-xs transition-all duration-200"
-            >
-              <span>Track Application</span>
-              <ChevronRight className="w-4 h-4 text-amber-400 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-
-          {/* Card 3: Employee / HR Portal */}
-          <div className="glass-panel p-8 flex flex-col justify-between glass-panel-hover group border-vamgold-500/20">
-            <div>
-              <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 mb-6 group-hover:scale-110 group-hover:border-emerald-400/50 shadow-[0_0_20px_rgba(52,211,153,0.15)] transition-all duration-300">
-                <UserCheck className="w-7 h-7" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-white mb-3">Employees & HR</h3>
-              <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Authorized staff login for tasks, attendance, leave management, offer letter generation, and directory.
-              </p>
-            </div>
-            <Link
-              href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/login'}
-              className="inline-flex items-center justify-between w-full btn-primary px-4 py-3 rounded-xl text-xs transition-all duration-200"
-            >
-              <span>{session ? 'Go to Workspace' : 'Sign In to Portal'}</span>
-              <ArrowRight className="w-4 h-4 text-vamnavy-950 group-hover:translate-x-1 transition-transform" />
-            </Link>
-          </div>
-        </div>
-
-        {/* Demo Credentials Quick Guide */}
-        <div className="w-full mt-16 p-8 glass-card rounded-2xl border border-white/10 shadow-2xl">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="w-4 h-4 text-vamgold-400" />
-            <h4 className="font-display text-sm font-bold text-vamgold-400 uppercase tracking-wider">
-              Quick Testing Credentials (Demo Mode)
-            </h4>
-          </div>
-
+        {/* Quick Testing Credentials Section */}
+        <div className="mt-20 glass-card p-8 rounded-3xl border border-slate-200">
+          <h4 className="font-display text-sm font-bold text-[#0f172a] uppercase tracking-wider mb-4">
+            Quick Testing Credentials (Demo Mode)
+          </h4>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-            <div className="bg-[#050d18] p-4 rounded-xl border border-white/10 hover:border-white/20 transition">
-              <span className="font-bold text-white block">HR Admin</span>
-              <span className="text-slate-400 block mt-1 font-mono">admin@vamtech.in</span>
-              <span className="text-slate-400 block font-mono">Admin@123</span>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <span className="font-bold text-[#0f172a] block">HR Admin</span>
+              <span className="text-slate-600 block mt-1 font-mono">admin@vamtech.in</span>
+              <span className="text-slate-600 block font-mono">Admin@123</span>
             </div>
-            <div className="bg-[#050d18] p-4 rounded-xl border border-white/10 hover:border-white/20 transition">
-              <span className="font-bold text-white block">Existing Employee</span>
-              <span className="text-slate-400 block mt-1 font-mono">employee@vamtech.in</span>
-              <span className="text-slate-400 block font-mono">Emp@123</span>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <span className="font-bold text-[#0f172a] block">Existing Employee</span>
+              <span className="text-slate-600 block mt-1 font-mono">employee@vamtech.in</span>
+              <span className="text-slate-600 block font-mono">Emp@123</span>
             </div>
-            <div className="bg-[#050d18] p-4 rounded-xl border border-white/10 hover:border-white/20 transition">
-              <span className="font-bold text-white block">New Hire (Force Password Reset)</span>
-              <span className="text-slate-400 block mt-1 font-mono">new.hire@vamtech.in</span>
-              <span className="text-slate-400 block font-mono">Temp@123</span>
+            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200">
+              <span className="font-bold text-[#0f172a] block">New Hire (Force Password Reset)</span>
+              <span className="text-slate-600 block mt-1 font-mono">new.hire@vamtech.in</span>
+              <span className="text-slate-600 block font-mono">Temp@123</span>
             </div>
           </div>
         </div>
       </main>
 
-      <footer className="border-t border-white/10 py-8 text-center text-xs text-slate-400">
+      <footer className="border-t border-slate-200 py-8 text-center text-xs text-slate-500">
         &copy; {new Date().getFullYear()} VAMTech Pvt Ltd. Internal Application System. All rights reserved.
       </footer>
     </div>

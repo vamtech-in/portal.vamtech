@@ -10,23 +10,19 @@ module.exports = {
     extend: {
       colors: {
         vamnavy: {
-          950: '#07111e',
-          900: '#0b1f3a', // Base VAMTech dark navy
-          800: '#132847',
-          700: '#1b3861',
-          600: '#274f87',
-          500: '#3466ae',
-          400: '#4d83cd',
-          300: '#79a6e3',
-          200: '#afccf3',
-          100: '#dbe8fa',
-          50: '#f0f5fd',
+          950: '#070d17',
+          900: '#0f172a', // VAMTech primary dark navy
+          800: '#1e293b',
+          700: '#334155',
+          600: '#475569',
+          50: '#f8fafc',
         },
-        vamgold: {
-          500: '#e5a93c',
-          400: '#f2bd57',
-          600: '#c28923',
-        }
+        vamorange: {
+          500: '#f9572a', // VAMTech signature orange
+          600: '#e0461b',
+          400: '#ff6f47',
+          50: '#fff5f2',
+        },
       },
       fontFamily: {
         sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],

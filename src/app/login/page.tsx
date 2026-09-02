@@ -31,7 +31,6 @@ export default function LoginPage() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      // Redirect to target workspace or forced password reset
       router.push(data.redirectTo || '/dashboard');
       router.refresh();
     } catch (err: any) {
@@ -42,32 +41,32 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07111e] text-slate-100 selection:bg-vamgold-500 selection:text-vamnavy-950">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
       <Navbar />
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md space-y-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 transition"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Portal Home</span>
           </Link>
 
-          <div className="glass-panel p-8 space-y-6 border-white/10 shadow-2xl">
+          <div className="glass-panel p-8 space-y-6 shadow-xl border-slate-200">
             <div className="text-center space-y-3 flex flex-col items-center">
               <VamtechLogo size="lg" showSubtext={false} />
               <div className="pt-2">
-                <h1 className="font-display text-2xl font-black text-white">Internal Staff Portal</h1>
-                <p className="text-xs text-slate-400 mt-1">
-                  Authorized access for employees and HR administrators on <span className="font-mono text-slate-300">portal.vamtech.in</span>
+                <h1 className="font-display text-2xl font-black text-[#0f172a]">Staff Portal Login</h1>
+                <p className="text-xs text-slate-500 mt-1">
+                  Authorized access for employees and HR administrators on <span className="font-mono text-slate-700">portal.vamtech.in</span>
                 </p>
               </div>
             </div>
 
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/30 p-3.5 rounded-xl flex items-center gap-3 text-xs text-rose-300">
+              <div className="bg-rose-50 border border-rose-200 p-3.5 rounded-xl flex items-center gap-3 text-xs text-rose-600 font-semibold">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -75,9 +74,9 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Email Address</label>
+                <label className="block text-slate-700 font-semibold mb-1">Email Address</label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                   <input
                     type="email"
                     required
@@ -90,9 +89,9 @@ export default function LoginPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Password</label>
+                <label className="block text-slate-700 font-semibold mb-1">Password</label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-500 absolute left-3.5 top-3" />
+                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                   <input
                     type="password"
                     required
@@ -107,7 +106,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-primary font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-xl"
+                className="w-full btn-orange font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 transition"
               >
                 {loading ? (
                   <span>Authenticating Session...</span>
@@ -120,10 +119,10 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="pt-4 border-t border-white/10 text-center">
-              <span className="text-[11px] text-slate-400 block mb-1">Need access or help?</span>
-              <span className="text-[10px] text-slate-400 block">
-                Contact HR Admin at <strong className="text-slate-200 font-mono">admin@vamtech.in</strong>
+            <div className="pt-4 border-t border-slate-100 text-center">
+              <span className="text-[11px] text-slate-500 block mb-1">Need access or assistance?</span>
+              <span className="text-[10px] text-slate-600 block font-medium">
+                Contact HR Admin at <strong className="text-[#0f172a] font-mono">admin@vamtech.in</strong>
               </span>
             </div>
           </div>
