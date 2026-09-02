@@ -93,24 +93,24 @@ export default function CandidatePipelinePage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-white flex items-center gap-2.5">
-            <Users className="w-6 h-6 text-vamgold-400" />
+          <h1 className="font-display text-2xl font-black text-[#0f172a] flex items-center gap-2.5">
+            <Users className="w-6 h-6 text-vamorange-500" />
             <span>Candidate Recruitment Pipeline</span>
           </h1>
-          <p className="text-xs text-slate-400 mt-1">Manage applicants, track reference numbers, issue offer letters, and onboard hires.</p>
+          <p className="text-xs text-slate-500 mt-1">Manage applicants, track reference numbers, issue offer letters, and onboard hires.</p>
         </div>
       </div>
 
       {/* Filter Bar */}
-      <div className="glass-panel p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+      <div className="glass-panel p-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-white border-slate-200">
         <div className="relative">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-2.5" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           <input
             type="text"
             placeholder="Search by name, email, or ref no..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full glass-input pl-9 pr-3 py-2 rounded-lg"
+            className="w-full glass-input pl-9 pr-3 py-2 rounded-xl"
           />
         </div>
 
@@ -118,7 +118,7 @@ export default function CandidatePipelinePage() {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="w-full glass-input px-3 py-2 rounded-lg bg-vamnavy-900"
+            className="w-full glass-input px-3 py-2 rounded-xl bg-white"
           >
             <option value="">All Statuses</option>
             <option value="Applied">Applied</option>
@@ -134,7 +134,7 @@ export default function CandidatePipelinePage() {
           <select
             value={roleFilter}
             onChange={(e) => setRoleFilter(e.target.value)}
-            className="w-full glass-input px-3 py-2 rounded-lg bg-vamnavy-900"
+            className="w-full glass-input px-3 py-2 rounded-xl bg-white"
           >
             <option value="">All Roles</option>
             <option value="Senior Full Stack Engineer">Senior Full Stack Engineer</option>
@@ -147,10 +147,10 @@ export default function CandidatePipelinePage() {
       </div>
 
       {/* Candidate Pipeline Table */}
-      <div className="glass-panel p-6 overflow-hidden">
+      <div className="glass-panel p-6 overflow-hidden bg-white border-slate-200">
         <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left text-slate-300">
-            <thead className="bg-vamnavy-900 text-slate-400 uppercase text-[10px] tracking-wider">
+          <table className="w-full text-xs text-left text-slate-700">
+            <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] tracking-wider border-b border-slate-200">
               <tr>
                 <th className="px-4 py-3">Ref Number</th>
                 <th className="px-4 py-3">Candidate Name</th>
@@ -160,10 +160,10 @@ export default function CandidatePipelinePage() {
                 <th className="px-4 py-3 text-right">Actions & Offers</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-vamnavy-800">
+            <tbody className="divide-y divide-slate-100">
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-8 text-slate-500">Loading candidate records...</td>
+                  <td colSpan={6} className="text-center py-8 text-slate-400">Loading candidate records...</td>
                 </tr>
               ) : candidates.length === 0 ? (
                 <tr>
@@ -171,26 +171,26 @@ export default function CandidatePipelinePage() {
                 </tr>
               ) : (
                 candidates.map((cand) => (
-                  <tr key={cand.id} className="hover:bg-vamnavy-900/60 transition">
+                  <tr key={cand.id} className="hover:bg-slate-50 transition">
                     {/* Ref Number */}
-                    <td className="px-4 py-3 font-mono font-bold text-vamgold-400">
+                    <td className="px-4 py-3 font-mono font-bold text-[#f9572a]">
                       {cand.refNumber}
                     </td>
 
                     {/* Candidate Name & Contact */}
                     <td className="px-4 py-3">
-                      <span className="font-bold text-white block">{cand.name}</span>
-                      <span className="text-[11px] text-slate-400 block">{cand.email}</span>
-                      <span className="text-[10px] text-slate-500 font-mono block">{cand.phone}</span>
+                      <span className="font-bold text-[#0f172a] block">{cand.name}</span>
+                      <span className="text-[11px] text-slate-500 block">{cand.email}</span>
+                      <span className="text-[10px] text-slate-400 font-mono block">{cand.phone}</span>
                     </td>
 
                     {/* Role Applied */}
-                    <td className="px-4 py-3 font-medium text-slate-200">
+                    <td className="px-4 py-3 font-semibold text-slate-800">
                       {cand.roleApplied}
                     </td>
 
                     {/* Applied Date */}
-                    <td className="px-4 py-3 font-mono text-slate-400">
+                    <td className="px-4 py-3 font-mono text-slate-500">
                       {new Date(cand.appliedAt).toLocaleDateString()}
                     </td>
 
@@ -199,7 +199,7 @@ export default function CandidatePipelinePage() {
                       <select
                         value={cand.status}
                         onChange={(e) => handleStatusChange(cand.id, e.target.value)}
-                        className={`px-2.5 py-1 text-[11px] font-bold rounded-lg bg-vamnavy-900 border cursor-pointer ${
+                        className={`px-2.5 py-1 text-[11px] font-bold rounded-lg cursor-pointer border ${
                           cand.status === 'Joined'
                             ? 'badge-joined'
                             : cand.status === 'Offer Sent'
@@ -213,12 +213,12 @@ export default function CandidatePipelinePage() {
                             : 'badge-applied'
                         }`}
                       >
-                        <option value="Applied" className="bg-vamnavy-950 text-sky-300">Applied</option>
-                        <option value="Interviewed" className="bg-vamnavy-950 text-purple-300">Interviewed</option>
-                        <option value="Selected" className="bg-vamnavy-950 text-amber-300">Selected</option>
-                        <option value="Offer Sent" className="bg-vamnavy-950 text-orange-300">Offer Sent</option>
-                        <option value="Joined" className="bg-vamnavy-950 text-emerald-300">Joined</option>
-                        <option value="Rejected" className="bg-vamnavy-950 text-rose-300">Rejected</option>
+                        <option value="Applied" className="bg-white text-sky-700">Applied</option>
+                        <option value="Interviewed" className="bg-white text-purple-700">Interviewed</option>
+                        <option value="Selected" className="bg-white text-yellow-700">Selected</option>
+                        <option value="Offer Sent" className="bg-white text-orange-700">Offer Sent</option>
+                        <option value="Joined" className="bg-white text-emerald-700">Joined</option>
+                        <option value="Rejected" className="bg-white text-rose-700">Rejected</option>
                       </select>
                     </td>
 
@@ -228,7 +228,7 @@ export default function CandidatePipelinePage() {
                         {cand.status === 'Selected' || cand.status === 'Offer Sent' ? (
                           <Link
                             href={`/hr/offer-letter/${cand.id}`}
-                            className="bg-vamgold-500 hover:bg-vamgold-400 text-vamnavy-950 font-bold px-3 py-1.5 rounded text-[11px] flex items-center gap-1 transition shadow"
+                            className="btn-orange text-white font-bold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1 transition shadow-sm"
                           >
                             <Send className="w-3.5 h-3.5" />
                             <span>{cand.status === 'Offer Sent' ? 'Re-Issue Offer' : 'Generate Offer'}</span>
@@ -241,7 +241,7 @@ export default function CandidatePipelinePage() {
                               setOnboardCandidate(cand);
                               setOnboardDesignation(cand.roleApplied);
                             }}
-                            className="bg-emerald-500 hover:bg-emerald-400 text-vamnavy-950 font-bold px-3 py-1.5 rounded text-[11px] flex items-center gap-1 transition shadow"
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1 transition shadow-sm"
                           >
                             <UserCheck className="w-3.5 h-3.5" />
                             <span>Onboard Employee</span>
@@ -259,49 +259,49 @@ export default function CandidatePipelinePage() {
 
       {/* Onboard Employee Modal */}
       {onboardCandidate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="bg-vamnavy-900 border border-emerald-500/40 rounded-xl w-full max-w-lg p-6 space-y-4">
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <UserCheck className="w-5 h-5 text-emerald-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl">
+            <h3 className="font-display text-lg font-bold text-[#0f172a] flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-emerald-600" />
               <span>Onboard Employee ({onboardCandidate.refNumber})</span>
             </h3>
-            <p className="text-xs text-slate-400">
-              This will create a new employee account carrying over Candidate Ref <strong className="text-vamgold-400 font-mono">{onboardCandidate.refNumber}</strong> as their Employee ID, set forced password reset on first login, and email credentials.
+            <p className="text-xs text-slate-500">
+              This will create a new employee account carrying over Candidate Ref <strong className="text-vamorange-500 font-mono">{onboardCandidate.refNumber}</strong> as their Employee ID, set forced password reset on first login, and email credentials.
             </p>
 
             {onboardMsg ? (
-              <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-lg text-xs font-bold text-center">
+              <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-xs font-bold text-center">
                 {onboardMsg}
               </div>
             ) : (
               <form onSubmit={handleOnboardSubmit} className="space-y-4 text-xs">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Full Name</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Full Name</label>
                   <input
                     type="text"
                     disabled
                     value={onboardCandidate.name}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-lg opacity-70 bg-vamnavy-950"
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl opacity-70 bg-slate-50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Email Address</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Email Address</label>
                   <input
                     type="text"
                     disabled
                     value={onboardCandidate.email}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-lg opacity-70 bg-vamnavy-950"
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl opacity-70 bg-slate-50"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Department *</label>
+                    <label className="block text-slate-700 font-semibold mb-1">Department *</label>
                     <select
                       value={onboardDept}
                       onChange={(e) => setOnboardDept(e.target.value)}
-                      className="w-full glass-input px-3.5 py-2.5 rounded-lg bg-vamnavy-950"
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl bg-white"
                     >
                       <option value="Engineering">Engineering</option>
                       <option value="Product Design">Product Design</option>
@@ -312,13 +312,13 @@ export default function CandidatePipelinePage() {
                   </div>
 
                   <div>
-                    <label className="block text-slate-300 font-semibold mb-1">Official Designation *</label>
+                    <label className="block text-slate-700 font-semibold mb-1">Official Designation *</label>
                     <input
                       type="text"
                       required
                       value={onboardDesignation}
                       onChange={(e) => setOnboardDesignation(e.target.value)}
-                      className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
                     />
                   </div>
                 </div>
@@ -327,14 +327,14 @@ export default function CandidatePipelinePage() {
                   <button
                     type="button"
                     onClick={() => setOnboardCandidate(null)}
-                    className="bg-vamnavy-800 text-slate-300 px-4 py-2 rounded-lg"
+                    className="bg-slate-100 text-slate-700 font-semibold px-4 py-2 rounded-xl"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={onboarding}
-                    className="bg-emerald-500 text-vamnavy-950 font-bold px-4 py-2 rounded-lg"
+                    className="btn-orange text-white font-bold px-4 py-2 rounded-xl"
                   >
                     {onboarding ? 'Onboarding...' : 'Confirm Onboarding & Email Credentials'}
                   </button>

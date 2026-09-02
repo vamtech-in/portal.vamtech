@@ -13,7 +13,7 @@ export default async function DashboardLayout({
   if (!session) redirect('/login');
 
   return (
-    <div className="min-h-screen flex flex-col bg-vamnavy-950 text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
       <Navbar session={session} />
       <div className="flex flex-1">
         <Sidebar role={session.role} />

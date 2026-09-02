@@ -46,47 +46,47 @@ export default function ApplyPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-vamnavy-950 text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-slate-400 hover:text-white transition mb-6"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
 
         {submittedRef ? (
-          <div className="glass-panel p-8 text-center space-y-6 animate-fade-in border-emerald-500/30">
-            <div className="w-16 h-16 bg-emerald-500/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
+          <div className="glass-panel p-8 text-center space-y-6 animate-fade-in border-emerald-200 bg-white">
+            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div>
-              <h2 className="text-2xl font-bold text-white">Application Submitted Successfully!</h2>
-              <p className="text-sm text-slate-300 mt-2">
+              <h2 className="font-display text-2xl font-black text-[#0f172a]">Application Submitted Successfully!</h2>
+              <p className="text-sm text-slate-600 mt-2">
                 Thank you for applying to VAMTech Pvt Ltd. Your application record has been registered.
               </p>
             </div>
 
-            <div className="bg-vamnavy-900 border border-vamgold-500/40 p-6 rounded-xl max-w-md mx-auto">
-              <span className="text-xs uppercase font-mono text-slate-400 tracking-wider block">
+            <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl max-w-md mx-auto">
+              <span className="text-xs uppercase font-mono font-bold text-slate-500 tracking-wider block">
                 Your Candidate Reference Number
               </span>
-              <span className="text-3xl font-extrabold font-mono text-vamgold-400 block mt-2">
+              <span className="text-3xl font-extrabold font-mono text-[#f9572a] block mt-2">
                 {submittedRef}
               </span>
-              <p className="text-xs text-slate-400 mt-3">
-                This number has been emailed to <strong className="text-slate-200">{formData.email}</strong>.
+              <p className="text-xs text-slate-500 mt-3">
+                This number has been emailed to <strong className="text-slate-800">{formData.email}</strong>.
               </p>
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href={`/status?ref=${submittedRef}&email=${encodeURIComponent(formData.email)}`}
-                className="w-full sm:w-auto bg-vamgold-500 hover:bg-vamgold-400 text-vamnavy-950 font-bold px-6 py-3 rounded-lg text-sm transition"
+                className="w-full sm:w-auto btn-orange font-bold px-6 py-3 rounded-xl text-sm transition"
               >
                 Track Application Status
               </Link>
@@ -103,23 +103,23 @@ export default function ApplyPage() {
                     coverNote: '',
                   });
                 }}
-                className="w-full sm:w-auto bg-vamnavy-900 hover:bg-vamnavy-800 border border-vamnavy-700 text-slate-300 px-6 py-3 rounded-lg text-sm transition"
+                className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-xl text-sm transition"
               >
                 Submit Another Application
               </button>
             </div>
           </div>
         ) : (
-          <div className="glass-panel p-6 sm:p-8 space-y-6">
-            <div className="border-b border-vamnavy-800 pb-4">
-              <h1 className="text-2xl font-extrabold text-white">VAMTech Job Application</h1>
-              <p className="text-xs text-slate-400 mt-1">
-                Fill out the form below to receive your unique Candidate Reference Number (VT-YYYY-XXX).
+          <div className="glass-panel p-6 sm:p-8 space-y-6 bg-white border-slate-200">
+            <div className="border-b border-slate-200 pb-4">
+              <h1 className="font-display text-2xl font-black text-[#0f172a]">VAMTech Job Application</h1>
+              <p className="text-xs text-slate-500 mt-1">
+                Fill out the form below to receive your unique Candidate Reference Number (<span className="font-mono text-slate-900 font-bold">VT-YYYY-XXX</span>).
               </p>
             </div>
 
             {error && (
-              <div className="bg-rose-500/10 border border-rose-500/30 p-4 rounded-lg flex items-center gap-3 text-xs text-rose-300">
+              <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl flex items-center gap-3 text-xs text-rose-600 font-semibold">
                 <AlertCircle className="w-5 h-5 shrink-0" />
                 <span>{error}</span>
               </div>
@@ -128,49 +128,49 @@ export default function ApplyPage() {
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Full Name *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Full Name *</label>
                   <input
                     type="text"
                     required
                     placeholder="e.g. Aniket Sharma"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Email Address *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Email Address *</label>
                   <input
                     type="email"
                     required
                     placeholder="e.g. candidate@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Phone Number *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Phone Number *</label>
                   <input
                     type="tel"
                     required
                     placeholder="e.g. +91 98765 43210"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-300 font-semibold mb-1">Role Applying For *</label>
+                  <label className="block text-slate-700 font-semibold mb-1">Role Applying For *</label>
                   <select
                     value={formData.roleApplied}
                     onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-lg bg-vamnavy-900"
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl bg-white"
                   >
                     <option value="Senior Full Stack Engineer">Senior Full Stack Engineer</option>
                     <option value="Frontend Developer">Frontend Developer</option>
@@ -185,23 +185,23 @@ export default function ApplyPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">LinkedIn Profile (Optional)</label>
+                <label className="block text-slate-700 font-semibold mb-1">LinkedIn Profile (Optional)</label>
                 <input
                   type="url"
                   placeholder="https://linkedin.com/in/yourprofile"
                   value={formData.linkedin}
                   onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                  className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                  className="w-full glass-input px-3.5 py-2.5 rounded-xl"
                 />
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Resume Document (PDF/DOC)</label>
-                <div className="border border-dashed border-vamnavy-700 bg-vamnavy-950/60 p-4 rounded-lg flex items-center justify-between">
+                <label className="block text-slate-700 font-semibold mb-1">Resume Document (PDF/DOC)</label>
+                <div className="border border-dashed border-slate-300 bg-slate-50 p-4 rounded-xl flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <FileText className="w-6 h-6 text-vamgold-400" />
+                    <FileText className="w-6 h-6 text-vamorange-500" />
                     <div>
-                      <span className="text-slate-300 font-medium block">
+                      <span className="text-slate-800 font-semibold block">
                         {formData.resumeUrl ? 'Resume file selected' : 'Upload Resume File'}
                       </span>
                       <span className="text-[10px] text-slate-500">PDF or DOC up to 10MB</span>
@@ -212,7 +212,7 @@ export default function ApplyPage() {
                     onClick={() =>
                       setFormData({ ...formData, resumeUrl: '/api/documents/uploaded-resume-sample.pdf' })
                     }
-                    className="bg-vamnavy-800 hover:bg-vamnavy-700 text-xs px-3 py-1.5 rounded text-slate-300 transition flex items-center gap-1.5"
+                    className="bg-slate-200 hover:bg-slate-300 text-xs px-3.5 py-2 rounded-lg text-slate-800 font-semibold transition flex items-center gap-1.5"
                   >
                     <Upload className="w-3.5 h-3.5" />
                     <span>{formData.resumeUrl ? 'Attached' : 'Simulate Upload'}</span>
@@ -221,13 +221,13 @@ export default function ApplyPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Cover Note (Optional)</label>
+                <label className="block text-slate-700 font-semibold mb-1">Cover Note (Optional)</label>
                 <textarea
                   rows={3}
                   placeholder="Tell us briefly about your background and why you want to join VAMTech..."
                   value={formData.coverNote}
                   onChange={(e) => setFormData({ ...formData, coverNote: e.target.value })}
-                  className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                  className="w-full glass-input px-3.5 py-2.5 rounded-xl"
                 />
               </div>
 
@@ -235,7 +235,7 @@ export default function ApplyPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-vamgold-500 hover:bg-vamgold-400 disabled:opacity-50 text-vamnavy-950 font-bold py-3 rounded-lg text-sm flex items-center justify-center gap-2 transition"
+                  className="w-full btn-orange font-bold py-3.5 rounded-xl text-sm flex items-center justify-center gap-2 transition"
                 >
                   {loading ? (
                     <span>Submitting Application...</span>
