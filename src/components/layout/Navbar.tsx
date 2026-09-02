@@ -3,8 +3,9 @@
 import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LogOut, User as UserIcon, Building2, Sparkles } from 'lucide-react';
+import { LogOut, Sparkles } from 'lucide-react';
 import { UserSession } from '@/lib/session';
+import VamtechLogo from '@/components/common/VamtechLogo';
 
 interface NavbarProps {
   session?: UserSession | null;
@@ -24,26 +25,12 @@ export default function Navbar({ session }: NavbarProps) {
   };
 
   return (
-    <header className="sticky top-0 z-40 bg-[#07111e]/90 backdrop-blur-xl border-b border-white/10 px-4 lg:px-8 py-3.5 shadow-2xl">
+    <header className="sticky top-0 z-40 bg-[#07111e]/90 backdrop-blur-xl border-b border-white/10 px-4 lg:px-8 py-3 shadow-2xl">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
-        {/* Brand & Subdomain Badge */}
-        <div className="flex items-center gap-3">
-          <Link href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/'} className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0b1f3a] via-[#132847] to-[#1b3861] border border-white/15 flex items-center justify-center text-vamgold-400 group-hover:scale-105 group-hover:border-vamgold-500/50 shadow-[0_0_15px_rgba(229,169,60,0.15)] transition-all duration-300">
-              <Building2 className="w-5 h-5 text-vamgold-400" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="font-display font-black text-xl text-white tracking-tight">VAMTech</span>
-                <span className="text-[10px] font-mono font-bold bg-vamgold-500/10 text-vamgold-400 px-2 py-0.5 rounded border border-vamgold-500/30 flex items-center gap-1 shadow-[0_0_10px_rgba(229,169,60,0.2)]">
-                  <Sparkles className="w-2.5 h-2.5" />
-                  PORTAL
-                </span>
-              </div>
-              <p className="text-[10px] text-slate-400 font-mono tracking-wider">portal.vamtech.in</p>
-            </div>
-          </Link>
-        </div>
+        {/* VAMTech Brand Logo Header */}
+        <Link href={session ? (session.role === 'admin' ? '/hr' : '/dashboard') : '/'} className="group">
+          <VamtechLogo size="md" />
+        </Link>
 
         {/* User Status / Quick Actions */}
         <div className="flex items-center gap-4">
@@ -63,7 +50,7 @@ export default function Navbar({ session }: NavbarProps) {
               </Link>
               <Link
                 href="/login"
-                className="btn-primary px-4 py-2 rounded-lg text-xs font-bold transition"
+                className="btn-primary px-4 py-2 rounded-xl text-xs font-bold transition"
               >
                 Employee Login
               </Link>
