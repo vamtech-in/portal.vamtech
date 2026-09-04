@@ -1,6 +1,11 @@
 import React from 'react';
 import fs from 'fs';
 import path from 'path';
+import os from 'os';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
+
+const execFileAsync = promisify(execFile);
 import {
   Document as PDFDocument,
   Page,
@@ -507,9 +512,9 @@ export const FullTimeOfferPDF: React.FC<{ details: OfferDetails }> = ({ details 
 };
 
 /**
- * Generate PDF Buffer for selected offer letter type
+ * Direct PDF Buffer rendering (runs within pure Node/React environment)
  */
-export async function generateOfferLetterPDFBuffer(
+export async function renderDirectOfferLetterPDFBuffer(
   type: 'UNPAID_INTERNSHIP' | 'PAID_INTERNSHIP' | 'FULL_TIME',
   details: OfferDetails
 ): Promise<Buffer> {
@@ -530,16 +535,7 @@ export async function generateOfferLetterPDFBuffer(
   return Buffer.concat(chunks);
 }
 
-/**
- * Generate PDF Buffer for generic employee vault document
- */
-export async function generateVaultDocumentPDFBuffer({
-  title,
-  type,
-  userName,
-  userEmail,
-  uploadedBy,
-}: {
+export async function renderDirectVaultDocumentPDFBuffer(params: {
   title: string;
   type: string;
   userName: string;
@@ -563,17 +559,17 @@ export async function generateVaultDocumentPDFBuffer({
         </View>
         <View style={styles.dividerLine} />
 
-        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#f9572a', marginBottom: 15 }}>{title}</Text>
+        <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#f9572a', marginBottom: 15 }}>{params.title}</Text>
 
         <View style={{ backgroundColor: '#f8fafc', padding: 15, borderRadius: 6, marginBottom: 20 }}>
           <Text style={{ fontSize: 10, color: '#334155', marginBottom: 6 }}>
-            <Text style={{ fontWeight: 'bold' }}>Employee Name: </Text>{userName} ({userEmail})
+            <Text style={{ fontWeight: 'bold' }}>Employee Name: </Text>{params.userName} ({params.userEmail})
           </Text>
           <Text style={{ fontSize: 10, color: '#334155', marginBottom: 6 }}>
-            <Text style={{ fontWeight: 'bold' }}>Document Type: </Text>{type}
+            <Text style={{ fontWeight: 'bold' }}>Document Type: </Text>{params.type}
           </Text>
           <Text style={{ fontSize: 10, color: '#334155' }}>
-            <Text style={{ fontWeight: 'bold' }}>Issued By: </Text>{uploadedBy || 'HR Administration'}
+            <Text style={{ fontWeight: 'bold' }}>Issued By: </Text>{params.uploadedBy || 'HR Administration'}
           </Text>
         </View>
 
@@ -594,4 +590,56 @@ export async function generateVaultDocumentPDFBuffer({
     chunks.push(typeof chunk === 'string' ? Buffer.from(chunk) : chunk);
   }
   return Buffer.concat(chunks);
+}
+
+/**
+ * Isolated process runner to prevent Next.js 15 React 19 JSX element conflicts
+ */
+async function runStandaloneGenerator(payload: any): Promise<Buffer> {
+  const tsxBin = path.join(process.cwd(), 'node_modules', 'tsx', 'dist', 'cli.mjs');
+  const scriptPath = path.join(process.cwd(), 'scripts', 'generate-pdf.ts');
+  const tempInput = path.join(os.tmpdir(), `pdf-in-${Date.now()}-${Math.random().toString(36).slice(2)}.json`);
+  const tempOutput = path.join(os.tmpdir(), `pdf-out-${Date.now()}-${Math.random().toString(36).slice(2)}.pdf`);
+
+  try {
+    await fs.promises.writeFile(tempInput, JSON.stringify(payload));
+    await execFileAsync(process.execPath, [tsxBin, scriptPath, tempInput, tempOutput]);
+    const buffer = await fs.promises.readFile(tempOutput);
+    return buffer;
+  } finally {
+    if (fs.existsSync(tempInput)) await fs.promises.unlink(tempInput).catch(() => {});
+    if (fs.existsSync(tempOutput)) await fs.promises.unlink(tempOutput).catch(() => {});
+  }
+}
+
+/**
+ * Generate PDF Buffer for selected offer letter type
+ */
+export async function generateOfferLetterPDFBuffer(
+  type: 'UNPAID_INTERNSHIP' | 'PAID_INTERNSHIP' | 'FULL_TIME',
+  details: OfferDetails
+): Promise<Buffer> {
+  try {
+    return await renderDirectOfferLetterPDFBuffer(type, details);
+  } catch (err: any) {
+    // If Next.js 15 React 19 throws Error #31 (Objects are not valid as a React child), isolate execution
+    return await runStandaloneGenerator({ type, details });
+  }
+}
+
+/**
+ * Generate PDF Buffer for generic employee vault document
+ */
+export async function generateVaultDocumentPDFBuffer(params: {
+  title: string;
+  type: string;
+  userName: string;
+  userEmail: string;
+  uploadedBy?: string;
+}): Promise<Buffer> {
+  try {
+    return await renderDirectVaultDocumentPDFBuffer(params);
+  } catch (err: any) {
+    return await runStandaloneGenerator({ kind: 'VAULT_DOCUMENT', ...params });
+  }
 }
