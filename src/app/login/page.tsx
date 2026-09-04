@@ -9,7 +9,7 @@ import { LogIn, Lock, Mail, AlertCircle, ArrowLeft } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -23,7 +23,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, password }),
       });
 
       const data = await res.json();
@@ -74,18 +74,24 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">Email Address</label>
+                <label className="block text-slate-700 font-semibold mb-1">
+                  Candidate ID or Email Address
+                </label>
                 <div className="relative">
                   <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
                   <input
-                    type="email"
+                    type="text"
                     required
-                    placeholder="e.g. employee@vamtech.in"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl"
+                    autoComplete="username"
+                    placeholder="e.g. VT-INT-2026-001, VT-2026-001, or email"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
+                    className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl uppercase placeholder:normal-case font-mono placeholder:font-sans"
                   />
                 </div>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Enter your assigned Candidate / Intern Reference ID (e.g. <span className="font-mono font-semibold text-slate-600">VT-INT-2026-001</span> or <span className="font-mono font-semibold text-slate-600">VT-2026-001</span>) or official email.
+                </p>
               </div>
 
               <div>

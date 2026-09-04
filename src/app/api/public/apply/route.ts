@@ -24,8 +24,8 @@ export async function POST(request: Request) {
       );
     }
 
-    // Auto-generate Candidate Ref Number VT-YYYY-XXX
-    const refNumber = await generateCandidateRefNumber();
+    // Auto-generate Candidate Ref Number (VT-INT-YYYY-XXX for interns, VT-YYYY-XXX for regular)
+    const refNumber = await generateCandidateRefNumber(roleApplied);
 
     // Save candidate to MongoDB database
     const candidate = await db.candidate.create({
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
         email: email.toLowerCase().trim(),
         phone,
         roleApplied,
-        resumeUrl: resumeUrl || '/api/documents/demo-resume.pdf',
+        resumeUrl: resumeUrl || null,
         linkedin: linkedin || null,
         coverNote: coverNote || null,
         status: 'Applied',

@@ -10,14 +10,26 @@ export async function GET(request: Request) {
   }
 
   const { searchParams } = new URL(request.url);
+  const id = searchParams.get('id') || '';
   const search = searchParams.get('search') || '';
   const status = searchParams.get('status') || '';
   const role = searchParams.get('role') || '';
 
   const whereClause: any = {};
 
-  if (search) {
+  if (id) {
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      whereClause.OR = [
+        { id: id },
+        { refNumber: id },
+      ];
+    } else {
+      whereClause.refNumber = id;
+    }
+  } else if (search) {
+    const isObjectId = /^[0-9a-fA-F]{24}$/.test(search);
     whereClause.OR = [
+      ...(isObjectId ? [{ id: search }] : []),
       { name: { contains: search } },
       { email: { contains: search } },
       { refNumber: { contains: search } },

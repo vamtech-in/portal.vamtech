@@ -229,31 +229,36 @@ export async function sendOfferLetterEmail({
 }
 
 /**
- * 4. Employee Onboarding Credentials Email
+ * 4. Employee / Intern Onboarding Credentials Email
  */
 export async function sendOnboardingCredentialsEmail({
   email,
   name,
   employeeId,
   tempPassword,
+  isIntern,
 }: {
   email: string;
   name: string;
   employeeId: string;
   tempPassword: string;
+  isIntern?: boolean;
 }) {
+  const roleLabel = isIntern ? 'Intern' : 'Employee';
+  const idLabel = isIntern ? 'Intern ID' : 'Employee ID';
+
   const html = `
     <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #0f172a; border: 1px solid #e2e8f0; padding: 30px; border-radius: 12px;">
       <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
         <h1 style="color: #0f172a; font-size: 24px; margin: 0;">Welcome to VAMTech!</h1>
-        <p style="color: #f9572a; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;">Employee Portal Account Credentials</p>
+        <p style="color: #f9572a; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;">${roleLabel} Portal Account Credentials</p>
       </div>
       <p style="font-size: 16px; color: #334155;">Dear ${name},</p>
       <p style="font-size: 15px; color: #475569; line-height: 1.6;">
-        Welcome to the team! Your employee account has been created on the internal VAMTech Portal.
+        Welcome to the team! Your ${roleLabel.toLowerCase()} account has been created on the internal VAMTech Portal.
       </p>
       <div style="background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; margin: 25px 0; border-radius: 8px;">
-        <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b;"><strong>Employee ID:</strong> <span style="color: #f9572a; font-family: monospace; font-weight: bold;">${employeeId}</span></p>
+        <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b;"><strong>${idLabel}:</strong> <span style="color: #f9572a; font-family: monospace; font-weight: bold;">${employeeId}</span></p>
         <p style="margin: 0 0 10px 0; font-size: 14px; color: #64748b;"><strong>Login Email:</strong> <span style="color: #0f172a; font-weight: bold;">${email}</span></p>
         <p style="margin: 0; font-size: 14px; color: #64748b;"><strong>Temporary Password:</strong> <span style="color: #0284c7; font-family: monospace; background: #e0f2fe; padding: 4px 8px; border-radius: 4px; font-weight: bold;">${tempPassword}</span></p>
       </div>
@@ -271,7 +276,7 @@ export async function sendOnboardingCredentialsEmail({
 
   return sendEmail({
     to: email,
-    subject: `Welcome to VAMTech - Employee Credentials (ID: ${employeeId})`,
+    subject: `Welcome to VAMTech - ${roleLabel} Credentials (${idLabel}: ${employeeId})`,
     html,
   });
 }

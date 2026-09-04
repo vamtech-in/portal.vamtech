@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 interface SidebarProps {
-  role: 'employee' | 'admin';
+  role: 'employee' | 'admin' | 'intern';
 }
 
 export default function Sidebar({ role }: SidebarProps) {
@@ -46,10 +46,10 @@ export default function Sidebar({ role }: SidebarProps) {
     <aside className="w-64 bg-white border-r border-slate-200/80 shrink-0 min-h-[calc(100vh-69px)] p-4 shadow-sm">
       <div className="mb-5 px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl">
         <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest">
-          {role === 'admin' ? 'HR Admin Panel' : 'Employee Workspace'}
+          {role === 'admin' ? 'HR Admin Panel' : role === 'intern' ? 'Intern Workspace' : 'Employee Workspace'}
         </div>
         <div className="font-display text-xs font-extrabold text-[#0f172a] mt-1">
-          {role === 'admin' ? 'Management Gateway' : 'Self-Service Portal'}
+          {role === 'admin' ? 'Management Gateway' : role === 'intern' ? 'Intern Portal' : 'Self-Service Portal'}
         </div>
       </div>
 

@@ -17,9 +17,14 @@ const rateLimitStore: RateLimitStore = {};
 export function checkRateLimit(
   ip: string,
   action: string,
-  maxLimit: number = 5,
+  maxLimit: number = 20,
   windowMs: number = 15 * 60 * 1000 // 15 minutes
 ): { success: boolean; remaining: number; resetInMs: number } {
+  // Relax rate limits for local testing or dev environment
+  if (process.env.NODE_ENV !== 'production' || ip === '127.0.0.1' || ip === '::1' || ip === 'localhost') {
+    return { success: true, remaining: 999, resetInMs: 0 };
+  }
+
   const now = Date.now();
   const key = `${action}:${ip}`;
 

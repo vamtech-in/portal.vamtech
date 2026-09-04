@@ -1,25 +1,34 @@
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import fs from 'fs';
+import path from 'path';
+import { generateOfferLetterPDFBuffer } from '../src/lib/pdf-generator';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Seeding VAMTech Portal database...');
+  console.log('🌱 Seeding VAMTech Portal database with Admin, Employee, and Interns...');
 
   // Hash passwords
   const adminPasswordHash = await bcrypt.hash('Admin@123', 10);
   const empPasswordHash = await bcrypt.hash('Emp@123', 10);
   const tempPasswordHash = await bcrypt.hash('Temp@123', 10);
+  const internPasswordHash = await bcrypt.hash('Intern@123', 10);
 
   // 1. Admin User
   const admin = await prisma.user.upsert({
     where: { email: 'admin@vamtech.in' },
-    update: {},
+    update: {
+      refNumber: 'VT-HR-ADMIN',
+      passwordHash: adminPasswordHash,
+      role: 'admin',
+    },
     create: {
       email: 'admin@vamtech.in',
       name: 'VAMTech HR Admin',
       passwordHash: adminPasswordHash,
       role: 'admin',
+      refNumber: 'VT-HR-ADMIN',
       mustResetPassword: false,
       department: 'Human Resources',
       designation: 'HR Director',
@@ -33,7 +42,11 @@ async function main() {
   // 2. Existing Employee User
   const employee1 = await prisma.user.upsert({
     where: { email: 'employee@vamtech.in' },
-    update: {},
+    update: {
+      refNumber: 'VT-2026-001',
+      role: 'employee',
+      passwordHash: empPasswordHash,
+    },
     create: {
       email: 'employee@vamtech.in',
       name: 'Aniket Sharma',
@@ -53,7 +66,11 @@ async function main() {
   // 3. Newly Onboarded Employee (Requires Password Reset)
   const employee2 = await prisma.user.upsert({
     where: { email: 'new.hire@vamtech.in' },
-    update: {},
+    update: {
+      refNumber: 'VT-2026-002',
+      role: 'employee',
+      passwordHash: tempPasswordHash,
+    },
     create: {
       email: 'new.hire@vamtech.in',
       name: 'Priya Verma',
@@ -69,7 +86,76 @@ async function main() {
   });
   console.log('👤 New Hire user created:', employee2.email);
 
-  // 4. Candidates Pipeline
+  // Clean up any stale demo users or legacy intern refNumbers
+  await prisma.user.deleteMany({
+    where: {
+      OR: [
+        { email: { in: ['rohan.gupta@example.com'] } },
+        { refNumber: { in: ['VT-2026-003', 'VT-2026-007'] } },
+      ],
+    },
+  });
+
+  // 4. Paid Intern User (Sumit Prajapati)
+  const intern1 = await prisma.user.upsert({
+    where: { email: 'intern@vamtech.in' },
+    update: {
+      refNumber: 'VT-INT-2026-001',
+      role: 'intern',
+      designation: 'Full Stack Development Intern (Paid)',
+      department: 'Engineering',
+      passwordHash: internPasswordHash,
+    },
+    create: {
+      email: 'intern@vamtech.in',
+      name: 'Sumit Prajapati',
+      passwordHash: internPasswordHash,
+      role: 'intern',
+      mustResetPassword: false,
+      refNumber: 'VT-INT-2026-001',
+      department: 'Engineering',
+      designation: 'Full Stack Development Intern (Paid)',
+      joiningDate: '2026-09-01',
+      phone: '+91 98765 12345',
+      emergencyContact: 'Father - +91 98765 54321',
+    },
+  });
+  console.log('👤 Paid Intern user created:', intern1.email, 'Ref:', intern1.refNumber);
+
+  // 5. Unpaid Intern User (Rohan Gupta)
+  const intern2 = await prisma.user.upsert({
+    where: { email: 'unpaid.intern@vamtech.in' },
+    update: {
+      refNumber: 'VT-INT-2026-002',
+      role: 'intern',
+      designation: 'Full Stack Development Intern (Unpaid)',
+      department: 'Engineering',
+      passwordHash: internPasswordHash,
+    },
+    create: {
+      email: 'unpaid.intern@vamtech.in',
+      name: 'Rohan Gupta',
+      passwordHash: internPasswordHash,
+      role: 'intern',
+      mustResetPassword: false,
+      refNumber: 'VT-INT-2026-002',
+      department: 'Engineering',
+      designation: 'Full Stack Development Intern (Unpaid)',
+      joiningDate: '2026-09-01',
+      phone: '+91 98222 33344',
+      emergencyContact: 'Mother - +91 98222 55566',
+    },
+  });
+  console.log('👤 Unpaid Intern user created:', intern2.email, 'Ref:', intern2.refNumber);
+
+  // Clean up legacy candidate ref numbers if they exist
+  await prisma.candidate.deleteMany({
+    where: {
+      refNumber: { in: ['VT-2026-003', 'VT-2026-007'] },
+    },
+  });
+
+  // 6. Candidates Pipeline
   const candidatesData = [
     {
       refNumber: 'VT-2026-001',
@@ -91,14 +177,14 @@ async function main() {
       status: 'Joined',
     },
     {
-      refNumber: 'VT-2026-003',
-      name: 'Rohan Gupta',
-      email: 'rohan.gupta@example.com',
-      phone: '+91 98222 33344',
-      roleApplied: 'Frontend Developer',
-      linkedin: 'https://linkedin.com/in/rohan-gupta',
-      coverNote: 'Passionate about building responsive, modern user interfaces with React and Tailwind.',
-      status: 'Selected',
+      refNumber: 'VT-INT-2026-001',
+      name: 'Sumit Prajapati',
+      email: 'intern@vamtech.in',
+      phone: '+91 98765 12345',
+      roleApplied: 'Full Stack Development Intern (Paid)',
+      linkedin: 'https://linkedin.com/in/sumit-prajapati',
+      coverNote: 'Enthusiastic full stack developer experienced in React, Next.js, and TypeScript.',
+      status: 'Joined',
     },
     {
       refNumber: 'VT-2026-004',
@@ -116,24 +202,170 @@ async function main() {
       roleApplied: 'DevOps & Infrastructure Specialist',
       status: 'Applied',
     },
+    {
+      refNumber: 'VT-INT-2026-002',
+      name: 'Rohan Gupta',
+      email: 'unpaid.intern@vamtech.in',
+      phone: '+91 98222 33344',
+      roleApplied: 'Full Stack Development Intern (Unpaid)',
+      linkedin: 'https://linkedin.com/in/rohan-gupta',
+      coverNote: 'Passionate about building responsive, modern user interfaces with React and Tailwind.',
+      status: 'Joined',
+    },
   ];
 
+  const candMap: Record<string, any> = {};
   for (const cand of candidatesData) {
-    await prisma.candidate.upsert({
+    const record = await prisma.candidate.upsert({
       where: { refNumber: cand.refNumber },
-      update: {},
+      update: {
+        name: cand.name,
+        email: cand.email,
+        phone: cand.phone,
+        roleApplied: cand.roleApplied,
+        status: cand.status,
+      },
       create: cand,
     });
+    candMap[cand.refNumber] = record;
   }
-  console.log('📋 Candidates pipeline seeded');
+  console.log('📋 Candidates pipeline seeded with intern IDs (VT-INT-2026-XXX)');
 
-  // 5. Tasks for Employee 1
+  // 7. Generate Real Physical PDF Offer Letters for Interns
+  const offersDir = path.join(process.cwd(), 'public', 'uploads', 'offers');
+  await fs.promises.mkdir(offersDir, { recursive: true });
+
+  // Paid Intern Offer Letter
+  try {
+    const paidOfferDetails = {
+      candidateName: 'Sumit Prajapati',
+      candidateAddress: 'Tiwariganj, Lucknow, Uttar Pradesh 226028',
+      candidateEmail: 'intern@vamtech.in',
+      candidatePhone: '+91 98765 12345',
+      designation: 'Full Stack Development Intern',
+      department: 'Engineering',
+      offerRefNumber: 'VAMT/HR/INT/2026-001',
+      date: '1 September 2026',
+      duration: '3 months',
+      startDate: '5 September 2026',
+      endDate: '5 December 2026',
+      workingHours: '10:00 AM to 5:00 PM, 5 days a week (Monday to Friday)',
+      stipendAmount: 5000,
+      reportingManager: 'Aditya Gupta, HR',
+      workLocation: 'Remote',
+      hrName: 'Aditya Gupta',
+    };
+
+    const paidPdfBuffer = await generateOfferLetterPDFBuffer('PAID_INTERNSHIP', paidOfferDetails);
+    const paidPdfPath = path.join(offersDir, 'offer-letter-VT-INT-2026-001.pdf');
+    await fs.promises.writeFile(paidPdfPath, paidPdfBuffer);
+    console.log('📄 Generated physical PDF for Paid Intern:', paidPdfPath);
+
+    // Create or update OfferLetter record
+    const cand001 = candMap['VT-INT-2026-001'];
+    if (cand001) {
+      await prisma.offerLetter.deleteMany({ where: { candidateId: cand001.id } });
+      await prisma.offerLetter.create({
+        data: {
+          candidateId: cand001.id,
+          offerRefNumber: 'VAMT/HR/INT/2026-001',
+          type: 'PAID_INTERNSHIP',
+          detailsJson: JSON.stringify(paidOfferDetails),
+          pdfUrl: '/uploads/offers/offer-letter-VT-INT-2026-001.pdf',
+        },
+      });
+    }
+
+    // Add Offer Letter to Intern's document vault
+    await prisma.document.deleteMany({
+      where: {
+        userId: intern1.id,
+        title: { contains: 'Offer Letter' },
+      },
+    });
+    await prisma.document.create({
+      data: {
+        userId: intern1.id,
+        title: 'Official Paid Internship Offer Letter (VAMT/HR/INT/2026-001)',
+        type: 'Offer Letter',
+        fileUrl: '/uploads/offers/offer-letter-VT-INT-2026-001.pdf',
+        fileSize: `${Math.round(paidPdfBuffer.length / 1024)} KB`,
+        uploadedBy: 'Aditya Gupta (HR)',
+      },
+    });
+  } catch (err) {
+    console.error('Failed generating seed PDF for Paid Intern', err);
+  }
+
+  // Unpaid Intern Offer Letter
+  try {
+    const unpaidOfferDetails = {
+      candidateName: 'Rohan Gupta',
+      candidateAddress: 'Lucknow, Uttar Pradesh 226028',
+      candidateEmail: 'unpaid.intern@vamtech.in',
+      candidatePhone: '+91 98222 33344',
+      designation: 'Full Stack Development Intern',
+      department: 'Engineering',
+      offerRefNumber: 'VAMT/HR/INT/2026-002',
+      date: '1 September 2026',
+      duration: '3 months',
+      startDate: '5 September 2026',
+      endDate: '5 December 2026',
+      workingHours: '10:00 AM to 5:00 PM, 5 days a week (Monday to Friday)',
+      reportingManager: 'Aditya Gupta, HR',
+      workLocation: 'Remote',
+      hrName: 'Aditya Gupta',
+    };
+
+    const unpaidPdfBuffer = await generateOfferLetterPDFBuffer('UNPAID_INTERNSHIP', unpaidOfferDetails);
+    const unpaidPdfPath = path.join(offersDir, 'offer-letter-VT-INT-2026-002.pdf');
+    await fs.promises.writeFile(unpaidPdfPath, unpaidPdfBuffer);
+    console.log('📄 Generated physical PDF for Unpaid Intern:', unpaidPdfPath);
+
+    // Create or update OfferLetter record
+    const cand002 = candMap['VT-INT-2026-002'];
+    if (cand002) {
+      await prisma.offerLetter.deleteMany({ where: { candidateId: cand002.id } });
+      await prisma.offerLetter.create({
+        data: {
+          candidateId: cand002.id,
+          offerRefNumber: 'VAMT/HR/INT/2026-002',
+          type: 'UNPAID_INTERNSHIP',
+          detailsJson: JSON.stringify(unpaidOfferDetails),
+          pdfUrl: '/uploads/offers/offer-letter-VT-INT-2026-002.pdf',
+        },
+      });
+    }
+
+    // Add Offer Letter to Intern's document vault
+    await prisma.document.deleteMany({
+      where: {
+        userId: intern2.id,
+        title: { contains: 'Offer Letter' },
+      },
+    });
+    await prisma.document.create({
+      data: {
+        userId: intern2.id,
+        title: 'Official Unpaid Internship Offer Letter (VAMT/HR/INT/2026-002)',
+        type: 'Offer Letter',
+        fileUrl: '/uploads/offers/offer-letter-VT-INT-2026-002.pdf',
+        fileSize: `${Math.round(unpaidPdfBuffer.length / 1024)} KB`,
+        uploadedBy: 'Aditya Gupta (HR)',
+      },
+    });
+  } catch (err) {
+    console.error('Failed generating seed PDF for Unpaid Intern', err);
+  }
+
+  // 8. Tasks for Employee 1
+  await prisma.task.deleteMany({ where: { userId: employee1.id } });
   await prisma.task.createMany({
     data: [
       {
         userId: employee1.id,
         title: 'Complete Internal Portal Auth Integration',
-        description: 'Implement Auth.js credentials provider and server-side middleware validation.',
+        description: 'Implement Auth credentials provider and server-side session validation.',
         status: 'In Progress',
         dueDate: '2026-09-05',
       },
@@ -154,7 +386,36 @@ async function main() {
     ],
   });
 
-  // 6. Work History for Employee 1
+  // 9. Tasks for Paid Intern (Sumit Prajapati)
+  await prisma.task.deleteMany({ where: { userId: intern1.id } });
+  await prisma.task.createMany({
+    data: [
+      {
+        userId: intern1.id,
+        title: 'Complete Onboarding & Workspace Setup',
+        description: 'Configure local development environment, git SSH keys, and verify npm dev server.',
+        status: 'Done',
+        dueDate: '2026-09-02',
+      },
+      {
+        userId: intern1.id,
+        title: 'Build Interactive Dashboard UI Components',
+        description: 'Implement responsive React and Tailwind components adhering to VAMTech design specifications.',
+        status: 'In Progress',
+        dueDate: '2026-09-08',
+      },
+      {
+        userId: intern1.id,
+        title: 'Submit Weekly Sprint Progress Report',
+        description: 'Summarize completed tasks and milestone achievements for technical mentor review.',
+        status: 'To Do',
+        dueDate: '2026-09-12',
+      },
+    ],
+  });
+
+  // 10. Work History for Employee 1
+  await prisma.workHistory.deleteMany({ where: { userId: employee1.id } });
   await prisma.workHistory.createMany({
     data: [
       {
@@ -174,32 +435,23 @@ async function main() {
     ],
   });
 
-  // 7. Leave Requests
-  await prisma.leaveRequest.createMany({
+  // 11. Work History for Intern 1
+  await prisma.workHistory.deleteMany({ where: { userId: intern1.id } });
+  await prisma.workHistory.createMany({
     data: [
       {
-        userId: employee1.id,
-        leaveType: 'Paid',
-        startDate: '2026-09-15',
-        endDate: '2026-09-18',
-        reason: 'Family vacation and personal engagement.',
-        status: 'Pending',
-      },
-      {
-        userId: employee1.id,
-        leaveType: 'Casual',
-        startDate: '2026-07-10',
-        endDate: '2026-07-11',
-        reason: 'Personal errands.',
-        status: 'Approved',
-        reviewedBy: 'VAMTech HR Admin',
-        reviewComment: 'Approved. Enjoy your time off.',
+        userId: intern1.id,
+        projectTitle: 'Candidate Application Tracking UI',
+        description: 'Designed and built clean applicant tracking status badges and interactive resume preview.',
+        skills: 'React, Next.js, Tailwind CSS, TypeScript',
+        dateCompleted: '2026-09-03',
       },
     ],
   });
 
-  // 8. Attendance Records
+  // 12. Attendance Records
   const today = new Date().toISOString().split('T')[0];
+  await prisma.attendance.deleteMany({ where: { userId: employee1.id } });
   await prisma.attendance.createMany({
     data: [
       {
@@ -219,17 +471,35 @@ async function main() {
     ],
   });
 
-  // 9. Documents
-  await prisma.document.createMany({
+  await prisma.attendance.deleteMany({ where: { userId: intern1.id } });
+  await prisma.attendance.createMany({
     data: [
       {
-        userId: employee1.id,
-        title: 'Official Full-Time Offer Letter',
-        type: 'Offer Letter',
-        fileUrl: '/api/documents/demo-offer-letter.pdf',
-        fileSize: '245 KB',
-        uploadedBy: 'VAMTech HR Admin',
+        userId: intern1.id,
+        date: today,
+        checkIn: '09:55 AM',
+        checkOut: '05:05 PM',
+        status: 'Present',
       },
+      {
+        userId: intern1.id,
+        date: '2026-09-01',
+        checkIn: '10:00 AM',
+        checkOut: '05:00 PM',
+        status: 'Present',
+      },
+    ],
+  });
+
+  // 13. Documents for Employee 1
+  await prisma.document.deleteMany({
+    where: {
+      userId: employee1.id,
+      title: { not: { contains: 'Official Offer Letter' } },
+    },
+  });
+  await prisma.document.createMany({
+    data: [
       {
         userId: employee1.id,
         title: 'Appointment Letter & Contract',
@@ -249,7 +519,8 @@ async function main() {
     ],
   });
 
-  // 10. Announcements & Holidays
+  // 14. Announcements & Holidays
+  await prisma.announcement.deleteMany({});
   await prisma.announcement.createMany({
     data: [
       {
@@ -275,7 +546,7 @@ async function main() {
     ],
   });
 
-  console.log('✅ Database seeding completed successfully!');
+  console.log('✅ Database seeding completed successfully with Intern accounts!');
 }
 
 main()

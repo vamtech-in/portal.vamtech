@@ -1,17 +1,20 @@
 import { db } from './db';
 
 /**
- * Generates next Candidate Reference Number in format VT-YYYY-XXX
+ * Generates next Candidate Reference Number
+ * Internships: VT-INT-YYYY-XXX
+ * Full-time / Regular: VT-YYYY-XXX
  */
-export async function generateCandidateRefNumber(): Promise<string> {
+export async function generateCandidateRefNumber(roleApplied?: string): Promise<string> {
   const currentYear = new Date().getFullYear();
-  const yearPrefix = `VT-${currentYear}-`;
+  const isIntern = roleApplied ? roleApplied.toLowerCase().includes('intern') : false;
+  const prefix = isIntern ? `VT-INT-${currentYear}-` : `VT-${currentYear}-`;
 
-  // Find latest candidate ref number for current year
+  // Find latest candidate ref number for current year with this prefix
   const latestCandidate = await db.candidate.findFirst({
     where: {
       refNumber: {
-        startsWith: yearPrefix,
+        startsWith: prefix,
       },
     },
     orderBy: {
@@ -22,16 +25,14 @@ export async function generateCandidateRefNumber(): Promise<string> {
   let nextSequence = 1;
   if (latestCandidate && latestCandidate.refNumber) {
     const parts = latestCandidate.refNumber.split('-');
-    if (parts.length === 3) {
-      const lastSeq = parseInt(parts[2], 10);
-      if (!isNaN(lastSeq)) {
-        nextSequence = lastSeq + 1;
-      }
+    const lastSeq = parseInt(parts[parts.length - 1], 10);
+    if (!isNaN(lastSeq)) {
+      nextSequence = lastSeq + 1;
     }
   }
 
   const paddedSeq = String(nextSequence).padStart(3, '0');
-  return `VT-${currentYear}-${paddedSeq}`;
+  return `${prefix}${paddedSeq}`;
 }
 
 /**

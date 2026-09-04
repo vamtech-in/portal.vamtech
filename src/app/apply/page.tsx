@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import Navbar from '@/components/layout/Navbar';
-import { Send, CheckCircle2, AlertCircle, ArrowLeft, Upload, FileText } from 'lucide-react';
+import { Send, CheckCircle2, AlertCircle, ArrowLeft, Upload, FileText, Loader2, Check } from 'lucide-react';
 
 export default function ApplyPage() {
   const [formData, setFormData] = useState({
@@ -17,8 +17,44 @@ export default function ApplyPage() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [resumeFileName, setResumeFileName] = useState('');
+  const [resumeFileSize, setResumeFileSize] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState('');
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
+
+  const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingResume(true);
+    setError('');
+
+    try {
+      const uploadData = new FormData();
+      uploadData.append('file', file);
+      uploadData.append('category', 'resumes');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to upload resume file.');
+      }
+
+      setFormData((prev) => ({ ...prev, resumeUrl: data.fileUrl }));
+      setResumeFileName(data.fileName);
+      setResumeFileSize(data.fileSize);
+    } catch (err: any) {
+      setError(err.message || 'Resume upload failed. Please try again.');
+    } finally {
+      setUploadingResume(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -178,6 +214,8 @@ export default function ApplyPage() {
                     <option value="UI/UX Designer">UI/UX Designer</option>
                     <option value="AI / Machine Learning Engineer">AI / Machine Learning Engineer</option>
                     <option value="DevOps Specialist">DevOps Specialist</option>
+                    <option value="Full Stack Development Intern (Paid)">Full Stack Development Intern (Paid)</option>
+                    <option value="Full Stack Development Intern (Unpaid)">Full Stack Development Intern (Unpaid)</option>
                     <option value="Software Engineer Intern (Paid)">Software Engineer Intern (Paid)</option>
                     <option value="Research Intern (Unpaid)">Research Intern (Unpaid)</option>
                   </select>
@@ -197,25 +235,47 @@ export default function ApplyPage() {
 
               <div>
                 <label className="block text-slate-700 font-semibold mb-1">Resume Document (PDF/DOC)</label>
-                <div className="border border-dashed border-slate-300 bg-slate-50 p-4 rounded-xl flex items-center justify-between">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleResumeFileChange}
+                  accept=".pdf,.doc,.docx"
+                  className="hidden"
+                />
+                <div className={`border border-dashed p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${formData.resumeUrl ? 'border-emerald-300 bg-emerald-50/50' : 'border-slate-300 bg-slate-50'}`}>
                   <div className="flex items-center gap-3">
-                    <FileText className="w-6 h-6 text-vamorange-500" />
+                    <FileText className={`w-6 h-6 ${formData.resumeUrl ? 'text-emerald-600' : 'text-vamorange-500'}`} />
                     <div>
-                      <span className="text-slate-800 font-semibold block">
-                        {formData.resumeUrl ? 'Resume file selected' : 'Upload Resume File'}
+                      <span className="text-slate-800 font-semibold block text-xs">
+                        {formData.resumeUrl ? (resumeFileName || 'Resume Attached') : 'Upload Resume File'}
                       </span>
-                      <span className="text-[10px] text-slate-500">PDF or DOC up to 10MB</span>
+                      <span className="text-[10px] text-slate-500">
+                        {formData.resumeUrl ? `${resumeFileSize || 'Uploaded'} • Ready for submission` : 'PDF or DOC up to 25MB'}
+                      </span>
                     </div>
                   </div>
                   <button
                     type="button"
-                    onClick={() =>
-                      setFormData({ ...formData, resumeUrl: '/api/documents/uploaded-resume-sample.pdf' })
-                    }
-                    className="bg-slate-200 hover:bg-slate-300 text-xs px-3.5 py-2 rounded-lg text-slate-800 font-semibold transition flex items-center gap-1.5"
+                    disabled={uploadingResume}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`text-xs px-3.5 py-2 rounded-lg font-semibold transition flex items-center justify-center gap-1.5 ${formData.resumeUrl ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-800'}`}
                   >
-                    <Upload className="w-3.5 h-3.5" />
-                    <span>{formData.resumeUrl ? 'Attached' : 'Simulate Upload'}</span>
+                    {uploadingResume ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Uploading...</span>
+                      </>
+                    ) : formData.resumeUrl ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        <span>Change File</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Choose File</span>
+                      </>
+                    )}
                   </button>
                 </div>
               </div>

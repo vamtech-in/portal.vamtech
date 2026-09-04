@@ -1,19 +1,24 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { FileSpreadsheet, Upload, Lock, ShieldCheck, FileText, UserCheck } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FileSpreadsheet, Upload, Lock, ShieldCheck, FileText, UserCheck, Loader2, Check } from 'lucide-react';
 
 export default function HRDocumentManagementPage() {
   const [employees, setEmployees] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
   // Upload Form State
   const [selectedUser, setSelectedUser] = useState('');
   const [title, setTitle] = useState('');
   const [docType, setDocType] = useState('Payslip');
-  const [fileUrl, setFileUrl] = useState('/api/documents/demo-payslip-sep-2026.pdf');
+  const [fileUrl, setFileUrl] = useState('');
+  const [fileName, setFileName] = useState('');
+  const [fileSize, setFileSize] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const fetchEmployees = async () => {
@@ -35,10 +40,52 @@ export default function HRDocumentManagementPage() {
     fetchEmployees();
   }, []);
 
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    setErrorMsg('');
+
+    try {
+      const uploadData = new FormData();
+      uploadData.append('file', file);
+      uploadData.append('category', 'documents');
+
+      const res = await fetch('/api/upload', {
+        method: 'POST',
+        body: uploadData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to upload document file.');
+      }
+
+      setFileUrl(data.fileUrl);
+      setFileName(data.fileName);
+      setFileSize(data.fileSize);
+      if (!title) {
+        setTitle(file.name.replace(/\.[^/.]+$/, ''));
+      }
+    } catch (err: any) {
+      setErrorMsg(err.message || 'File upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
+    setErrorMsg('');
     setSuccessMsg('');
+
+    if (!fileUrl) {
+      setErrorMsg('Please choose and upload a document file before submitting.');
+      return;
+    }
+
+    setSubmitting(true);
 
     try {
       const res = await fetch('/api/hr/documents', {
@@ -49,16 +96,23 @@ export default function HRDocumentManagementPage() {
           title,
           type: docType,
           fileUrl,
-          fileSize: '240 KB',
+          fileSize: fileSize || 'Document',
         }),
       });
 
-      if (res.ok) {
-        setSuccessMsg('Document successfully issued to employee vault with signed URL access control!');
-        setTitle('');
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to issue document.');
       }
-    } catch (e) {
+
+      setSuccessMsg('Document successfully uploaded and issued to employee vault!');
+      setTitle('');
+      setFileUrl('');
+      setFileName('');
+      setFileSize('');
+    } catch (e: any) {
       console.error('Document upload error', e);
+      setErrorMsg(e.message || 'Failed to upload document.');
     } finally {
       setSubmitting(false);
     }
@@ -96,6 +150,12 @@ export default function HRDocumentManagementPage() {
           </div>
         )}
 
+        {errorMsg && (
+          <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg text-xs font-bold">
+            {errorMsg}
+          </div>
+        )}
+
         <form onSubmit={handleUpload} className="space-y-4 text-xs">
           <div>
             <label className="block text-slate-300 font-semibold mb-1">Select Target Employee *</label>
@@ -106,7 +166,7 @@ export default function HRDocumentManagementPage() {
             >
               {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
-                  {emp.name} ({emp.email}) - ID: {emp.refNumber || 'EMP'}
+                  {emp.name} ({emp.refNumber || 'Staff'}) - {emp.designation} ({emp.email})
                 </option>
               ))}
             </select>
@@ -142,22 +202,48 @@ export default function HRDocumentManagementPage() {
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Upload File (PDF / Image)</label>
-            <div className="border border-dashed border-vamnavy-700 bg-vamnavy-950/60 p-4 rounded-lg flex items-center justify-between">
+            <label className="block text-slate-300 font-semibold mb-1">Upload File (PDF / Image) *</label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+              className="hidden"
+            />
+            <div className={`border border-dashed p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${fileUrl ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-vamnavy-700 bg-vamnavy-950/60'}`}>
               <div className="flex items-center gap-3">
-                <FileText className="w-6 h-6 text-sky-400" />
+                <FileText className={`w-6 h-6 ${fileUrl ? 'text-emerald-400' : 'text-sky-400'}`} />
                 <div>
-                  <span className="text-slate-300 font-medium block">Encrypted Document Upload</span>
-                  <span className="text-[10px] text-slate-500">PDF up to 25MB</span>
+                  <span className="text-slate-200 font-medium block">
+                    {fileUrl ? (fileName || 'Document File Attached') : 'Choose document file to upload'}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {fileUrl ? `${fileSize || 'Uploaded'} • Ready to issue` : 'PDF, DOC, DOCX, or Image up to 25MB'}
+                  </span>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => setFileUrl('/api/documents/demo-uploaded-file.pdf')}
-                className="bg-vamnavy-800 hover:bg-vamnavy-700 text-xs px-3 py-1.5 rounded text-slate-300 transition flex items-center gap-1.5"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+                className={`text-xs px-3.5 py-2 rounded font-semibold transition flex items-center justify-center gap-1.5 ${fileUrl ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-vamnavy-800 hover:bg-vamnavy-700 text-slate-200'}`}
               >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Selected</span>
+                {uploading ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Uploading...</span>
+                  </>
+                ) : fileUrl ? (
+                  <>
+                    <Check className="w-3.5 h-3.5" />
+                    <span>Change File</span>
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-3.5 h-3.5" />
+                    <span>Select File</span>
+                  </>
+                )}
               </button>
             </div>
           </div>

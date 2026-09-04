@@ -182,6 +182,17 @@ export default function CandidatePipelinePage() {
                       <span className="font-bold text-[#0f172a] block">{cand.name}</span>
                       <span className="text-[11px] text-slate-500 block">{cand.email}</span>
                       <span className="text-[10px] text-slate-400 font-mono block">{cand.phone}</span>
+                      {cand.resumeUrl && (
+                        <a
+                          href={cand.resumeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[10px] text-sky-700 hover:text-sky-900 font-semibold mt-1.5 bg-sky-50 hover:bg-sky-100 px-2 py-0.5 rounded border border-sky-200 transition"
+                        >
+                          <FileText className="w-3 h-3" />
+                          <span>View Resume</span>
+                        </a>
+                      )}
                     </td>
 
                     {/* Role Applied */}

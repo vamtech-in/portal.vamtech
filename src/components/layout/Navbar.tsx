@@ -55,6 +55,8 @@ export default function Navbar({ session }: NavbarProps) {
                 className={`px-2 py-0.5 text-[10px] font-mono font-bold rounded-full uppercase tracking-wider ${
                   session.role === 'admin'
                     ? 'bg-amber-100 text-amber-800 border border-amber-300'
+                    : session.role === 'intern'
+                    ? 'bg-purple-100 text-purple-800 border border-purple-300'
                     : 'bg-sky-100 text-sky-800 border border-sky-300'
                 }`}
               >

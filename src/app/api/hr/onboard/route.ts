@@ -30,16 +30,26 @@ export async function POST(request: Request) {
       where: { email: candidate.email },
     });
 
+    const targetDesignation = designation || candidate.roleApplied;
+    const isIntern = targetDesignation.toLowerCase().includes('intern');
+    const assignedRole = isIntern ? 'intern' : 'employee';
+
+    // Ensure intern IDs contain 'INT' (e.g. VT-INT-2026-001)
+    let assignedId = candidate.refNumber;
+    if (isIntern && !assignedId.toUpperCase().includes('INT')) {
+      assignedId = assignedId.replace(/^VT-/i, 'VT-INT-');
+    }
+
     let user;
     if (existingUser) {
       user = await db.user.update({
         where: { id: existingUser.id },
         data: {
-          role: 'employee',
+          role: assignedRole,
           mustResetPassword: true,
-          refNumber: candidate.refNumber,
+          refNumber: assignedId,
           department: department || 'Engineering',
-          designation: designation || candidate.roleApplied,
+          designation: targetDesignation,
           joiningDate: joiningDate || new Date().toISOString().split('T')[0],
           phone: candidate.phone,
         },
@@ -50,36 +60,41 @@ export async function POST(request: Request) {
           email: candidate.email,
           name: candidate.name,
           passwordHash,
-          role: 'employee',
+          role: assignedRole,
           mustResetPassword: true, // Force password change on first login
-          refNumber: candidate.refNumber, // Carry over Candidate Ref No as Employee ID
+          refNumber: assignedId, // Intern ID with INT or Employee ID
           department: department || 'Engineering',
-          designation: designation || candidate.roleApplied,
+          designation: targetDesignation,
           joiningDate: joiningDate || new Date().toISOString().split('T')[0],
           phone: candidate.phone,
         },
       });
     }
 
-    // Mark candidate status as "Joined"
+    // Mark candidate status as "Joined" and sync refNumber if updated to intern format
     await db.candidate.update({
       where: { id: candidate.id },
-      data: { status: 'Joined' },
+      data: { 
+        status: 'Joined',
+        refNumber: assignedId,
+      },
     });
 
-    // Email login credentials & portal URL to new employee
+    // Email login credentials & portal URL to new intern/employee
     await sendOnboardingCredentialsEmail({
       email: candidate.email,
       name: candidate.name,
-      employeeId: candidate.refNumber,
+      employeeId: assignedId,
       tempPassword,
+      isIntern,
     });
 
+    const roleName = isIntern ? 'Intern' : 'Employee';
     return NextResponse.json({
       success: true,
       user,
       tempPassword,
-      message: `Employee account created for ${candidate.name} (Employee ID: ${candidate.refNumber}). Credentials emailed successfully!`,
+      message: `${roleName} account created for ${candidate.name} (${roleName} ID: ${assignedId}). Credentials emailed successfully!`,
     });
   } catch (error) {
     console.error('Employee onboarding error', error);

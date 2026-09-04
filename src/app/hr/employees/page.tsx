@@ -19,7 +19,7 @@ export default function EmployeeDirectoryPage() {
   const [editModalUser, setEditModalUser] = useState<any | null>(null);
   const [editDept, setEditDept] = useState('');
   const [editDesignation, setEditDesignation] = useState('');
-  const [editRole, setEditRole] = useState<'employee' | 'admin'>('employee');
+  const [editRole, setEditRole] = useState<'employee' | 'admin' | 'intern'>('employee');
   const [savingEdit, setSavingEdit] = useState(false);
 
   const fetchEmployees = async () => {
@@ -152,8 +152,12 @@ export default function EmployeeDirectoryPage() {
                   </div>
                 </div>
 
-                <span className="font-mono text-[11px] font-bold text-vamgold-400 bg-vamnavy-900 px-2 py-0.5 rounded border border-vamgold-500/30">
-                  ID: {emp.refNumber || 'EMP'}
+                <span className={`font-mono text-[11px] font-bold px-2 py-0.5 rounded border ${
+                  emp.role === 'intern'
+                    ? 'text-purple-300 bg-purple-950/40 border-purple-500/30'
+                    : 'text-vamgold-400 bg-vamnavy-900 border-vamgold-500/30'
+                }`}>
+                  ID: {emp.refNumber || (emp.role === 'intern' ? 'INT' : 'EMP')}
                 </span>
               </div>
 
@@ -168,7 +172,7 @@ export default function EmployeeDirectoryPage() {
                 </div>
                 <div>
                   <span className="text-slate-400 font-medium block">Role Privilege</span>
-                  <span className={`font-bold uppercase ${emp.role === 'admin' ? 'text-amber-400' : 'text-sky-400'}`}>
+                  <span className={`font-bold uppercase ${emp.role === 'admin' ? 'text-amber-400' : emp.role === 'intern' ? 'text-purple-400' : 'text-sky-400'}`}>
                     {emp.role}
                   </span>
                 </div>
@@ -310,6 +314,7 @@ export default function EmployeeDirectoryPage() {
                   className="w-full glass-input px-3 py-2 rounded-lg bg-vamnavy-950"
                 >
                   <option value="employee">Employee (Standard Workspace)</option>
+                  <option value="intern">Intern (Intern Workspace)</option>
                   <option value="admin">Admin / HR (Full Management Access)</option>
                 </select>
               </div>

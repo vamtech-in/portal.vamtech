@@ -89,7 +89,7 @@ function StatusContent() {
             <input
               type="text"
               required
-              placeholder="e.g. VT-2026-001"
+              placeholder="e.g. VT-INT-2026-001 or VT-2026-001"
               value={refNumber}
               onChange={(e) => setRefNumber(e.target.value)}
               className="w-full glass-input px-3.5 py-2.5 rounded-xl font-mono uppercase"
@@ -209,15 +209,30 @@ function StatusContent() {
 
           {/* Latest Offer Note if applicable */}
           {result.offerLetters && result.offerLetters.length > 0 && (
-            <div className="bg-sky-50 border border-sky-200 p-4 rounded-2xl flex items-center justify-between">
+            <div className="bg-sky-50 border border-sky-200 p-4 sm:p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <FileCheck2 className="w-5 h-5 text-sky-600" />
+                <FileCheck2 className="w-6 h-6 text-sky-600 shrink-0" />
                 <div>
-                  <span className="text-xs font-bold text-slate-900 block">Official Offer Issued</span>
-                  <span className="text-[10px] text-slate-500 font-mono">Ref: {result.offerLetters[0].offerRefNumber} &bull; {result.offerLetters[0].type.replace('_', ' ')}</span>
+                  <span className="text-xs font-bold text-slate-900 block">Official Offer Letter Issued</span>
+                  <span className="text-[10px] text-slate-500 font-mono">
+                    Ref: {result.offerLetters[0].offerRefNumber} &bull; {result.offerLetters[0].type.replace('_', ' ')}
+                  </span>
                 </div>
               </div>
-              <span className="text-xs text-sky-700 font-semibold">Communicated via Email</span>
+              {result.offerLetters[0].pdfUrl ? (
+                <a
+                  href={result.offerLetters[0].pdfUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="btn-orange text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center justify-center gap-1.5 transition shadow-sm"
+                >
+                  <FileCheck2 className="w-3.5 h-3.5" />
+                  <span>Download Offer Letter (PDF)</span>
+                </a>
+              ) : (
+                <span className="text-xs text-sky-700 font-semibold">Communicated via Email</span>
+              )}
             </div>
           )}
         </div>

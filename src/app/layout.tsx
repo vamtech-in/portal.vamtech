@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
-import DevEmailModal from '@/components/common/DevEmailModal';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -42,7 +41,6 @@ export default function RootLayout({
       </head>
       <body className="bg-[#f8fafc] text-slate-900 min-h-screen flex flex-col font-sans antialiased selection:bg-vamorange-500 selection:text-white">
         {children}
-        <DevEmailModal />
       </body>
     </html>
   );

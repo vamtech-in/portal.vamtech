@@ -8,7 +8,7 @@ export interface UserSession {
   id: string;
   email: string;
   name: string;
-  role: 'employee' | 'admin';
+  role: 'employee' | 'admin' | 'intern';
   refNumber?: string;
   mustResetPassword?: boolean;
 }

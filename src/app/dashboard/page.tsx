@@ -127,8 +127,8 @@ export default function EmployeeProfilePage() {
 
           <div className="space-y-3">
             <div>
-              <span className="text-slate-500 font-medium block">Employee Reference ID</span>
-              <span className="text-slate-900 font-mono font-bold">{profile.refNumber || 'VT-2026-001'}</span>
+              <span className="text-slate-500 font-medium block">{profile.role === 'intern' ? 'Intern Reference ID' : 'Employee Reference ID'}</span>
+              <span className="text-slate-900 font-mono font-bold">{profile.refNumber || (profile.role === 'intern' ? 'VT-INT-2026-001' : 'VT-2026-001')}</span>
             </div>
             <div>
               <span className="text-slate-500 font-medium block">Assigned Department</span>

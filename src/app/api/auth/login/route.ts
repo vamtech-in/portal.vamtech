@@ -18,23 +18,55 @@ export async function POST(request: Request) {
       );
     }
 
-    const { email, password } = await request.json();
+    const body = await request.json();
+    const rawIdentifier = (body.identifier || body.email || '').trim();
+    const password = body.password;
 
-    if (!email || !password) {
-      return NextResponse.json({ error: 'Email and password are required.' }, { status: 400 });
+    if (!rawIdentifier || !password) {
+      return NextResponse.json({ error: 'Candidate ID or Email and password are required.' }, { status: 400 });
     }
 
-    const user = await db.user.findUnique({
-      where: { email: email.toLowerCase().trim() },
+    const lowerEmail = rawIdentifier.toLowerCase();
+    const upperRaw = rawIdentifier.toUpperCase();
+    const noSpaces = rawIdentifier.replace(/\s+/g, '').toUpperCase();
+    const hyphensClean = rawIdentifier.replace(/\s*-\s*/g, '-').toUpperCase();
+
+    const idPermutations = new Set<string>([
+      rawIdentifier,
+      upperRaw,
+      lowerEmail,
+      noSpaces,
+      hyphensClean,
+    ]);
+
+    // If user enters INT-2026-001 or INT-001, also test VT-INT-...
+    if (hyphensClean.startsWith('INT-')) {
+      idPermutations.add(`VT-${hyphensClean}`);
+    }
+    // If user enters VT-2026-001 for an intern with VT-INT-2026-001, or vice versa
+    if (hyphensClean.startsWith('VT-') && !hyphensClean.includes('-INT-')) {
+      idPermutations.add(hyphensClean.replace('VT-', 'VT-INT-'));
+    }
+
+    const orConditions = Array.from(idPermutations).flatMap((val) => [
+      { email: val.toLowerCase() },
+      { refNumber: val },
+    ]);
+
+    // Find user by either email or Candidate / Employee / Intern Reference ID (refNumber)
+    const user = await db.user.findFirst({
+      where: {
+        OR: orConditions,
+      },
     });
 
     if (!user) {
-      return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid Candidate ID / Email or password.' }, { status: 401 });
     }
 
     const isMatch = await bcrypt.compare(password, user.passwordHash);
     if (!isMatch) {
-      return NextResponse.json({ error: 'Invalid email or password.' }, { status: 401 });
+      return NextResponse.json({ error: 'Invalid Candidate ID / Email or password.' }, { status: 401 });
     }
 
     // Create session
@@ -42,7 +74,7 @@ export async function POST(request: Request) {
       id: user.id,
       email: user.email,
       name: user.name,
-      role: user.role as 'employee' | 'admin',
+      role: user.role as 'employee' | 'admin' | 'intern',
       refNumber: user.refNumber || undefined,
       mustResetPassword: user.mustResetPassword,
     });

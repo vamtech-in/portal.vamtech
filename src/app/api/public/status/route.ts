@@ -37,6 +37,7 @@ export async function POST(request: Request) {
           select: {
             offerRefNumber: true,
             type: true,
+            pdfUrl: true,
             createdAt: true,
           },
           orderBy: { createdAt: 'desc' },

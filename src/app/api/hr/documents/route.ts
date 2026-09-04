@@ -11,8 +11,8 @@ export async function POST(request: Request) {
 
     const { userId, title, type, fileUrl, fileSize } = await request.json();
 
-    if (!userId || !title || !type) {
-      return NextResponse.json({ error: 'User ID, Title, and Document Type are required.' }, { status: 400 });
+    if (!userId || !title || !type || !fileUrl) {
+      return NextResponse.json({ error: 'User ID, Title, Document Type, and Uploaded File are required.' }, { status: 400 });
     }
 
     const doc = await db.document.create({
@@ -20,8 +20,8 @@ export async function POST(request: Request) {
         userId,
         title,
         type,
-        fileUrl: fileUrl || '/api/documents/demo-uploaded-file.pdf',
-        fileSize: fileSize || '250 KB',
+        fileUrl,
+        fileSize: fileSize || 'Document',
         uploadedBy: session.name,
       },
     });
