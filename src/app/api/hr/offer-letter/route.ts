@@ -82,14 +82,18 @@ export async function POST(request: Request) {
     // Render real PDF Buffer
     const pdfBuffer = await generateOfferLetterPDFBuffer(type, offerDetails);
 
-    // Save PDF file to public disk storage
-    const offersDir = path.join(process.cwd(), 'public', 'uploads', 'offers');
-    await fs.promises.mkdir(offersDir, { recursive: true });
+    // Save PDF file to public disk storage if filesystem is writable (local dev/servers)
     const cleanRef = candidate.refNumber.replace(/[^a-zA-Z0-9_-]/g, '_');
     const pdfFileName = `offer-letter-${cleanRef}.pdf`;
-    const pdfFilePath = path.join(offersDir, pdfFileName);
-    await fs.promises.writeFile(pdfFilePath, pdfBuffer);
-    const realPdfUrl = `/uploads/offers/${pdfFileName}`;
+    try {
+      const offersDir = path.join(process.cwd(), 'public', 'uploads', 'offers');
+      await fs.promises.mkdir(offersDir, { recursive: true });
+      const pdfFilePath = path.join(offersDir, pdfFileName);
+      await fs.promises.writeFile(pdfFilePath, pdfBuffer);
+    } catch (fsErr) {
+      // In serverless environments (e.g. Vercel), disk is read-only. This is safely handled by the dynamic download endpoint.
+      console.warn('Notice: PDF not saved to disk storage in serverless environment:', fsErr);
+    }
 
     // Save Offer Letter Record
     const offerRecord = await db.offerLetter.create({
@@ -98,9 +102,17 @@ export async function POST(request: Request) {
         offerRefNumber,
         type,
         detailsJson: JSON.stringify(offerDetails),
-        pdfUrl: realPdfUrl,
+        pdfUrl: '',
       },
     });
+
+    // Set permanent dynamic download URL
+    const realPdfUrl = `/api/documents/offer-letter/${offerRecord.id}`;
+    await db.offerLetter.update({
+      where: { id: offerRecord.id },
+      data: { pdfUrl: realPdfUrl },
+    });
+    offerRecord.pdfUrl = realPdfUrl;
 
     // Also check if candidate already exists as an employee user and create document record in their vault
     const employeeUser = await db.user.findFirst({
@@ -145,8 +157,11 @@ export async function POST(request: Request) {
       offerRecord,
       message: `Offer letter ${offerRefNumber} generated and emailed to ${candidate.email}! Candidate status updated to Offer Sent.`,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Offer letter generation error', error);
-    return NextResponse.json({ error: 'Failed to generate offer letter.' }, { status: 500 });
+    return NextResponse.json(
+      { error: error?.message || 'Failed to generate offer letter.' },
+      { status: 500 }
+    );
   }
 }

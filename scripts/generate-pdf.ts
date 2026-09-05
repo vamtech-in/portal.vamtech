@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { renderDirectOfferLetterPDFBuffer, renderDirectVaultDocumentPDFBuffer, OfferDetails } from '../src/lib/pdf-generator';
+import { generateOfferLetterPDFBuffer, generateVaultDocumentPDFBuffer, OfferDetails } from '../src/lib/pdf-generator';
 
 async function main() {
   const args = process.argv.slice(2);
@@ -18,7 +18,7 @@ async function main() {
   let buffer: Buffer;
 
   if (payload.kind === 'VAULT_DOCUMENT') {
-    buffer = await renderDirectVaultDocumentPDFBuffer({
+    buffer = await generateVaultDocumentPDFBuffer({
       title: payload.title || 'Document',
       type: payload.type || 'Document',
       userName: payload.userName || payload.employeeName || 'Employee',
@@ -26,8 +26,7 @@ async function main() {
       uploadedBy: payload.uploadedBy || 'HR Administration',
     });
   } else {
-    // Offer letter
-    buffer = await renderDirectOfferLetterPDFBuffer(payload.type, payload.details as OfferDetails);
+    buffer = await generateOfferLetterPDFBuffer(payload.type, payload.details as OfferDetails);
   }
 
   fs.mkdirSync(path.dirname(outputFilePath), { recursive: true });
