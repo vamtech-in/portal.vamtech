@@ -41,6 +41,11 @@ export interface OfferDetails {
 /**
  * Generate PDF Buffer for selected offer letter type using native high-performance PDFKit
  */
+import { numberToWords } from './number-to-words';
+
+/**
+ * Generate PDF Buffer for selected offer letter type matching the official VAMTech 2-page template
+ */
 export function generateOfferLetterPDFBuffer(
   type: 'UNPAID_INTERNSHIP' | 'PAID_INTERNSHIP' | 'FULL_TIME',
   details: OfferDetails
@@ -49,7 +54,7 @@ export function generateOfferLetterPDFBuffer(
     try {
       const doc = new PDFDocument({
         size: 'A4',
-        margins: { top: 32, bottom: 32, left: 45, right: 45 },
+        margins: { top: 30, bottom: 28, left: 45, right: 45 },
         info: {
           Title: `Offer_Letter_${details.offerRefNumber.replace(/[^a-zA-Z0-9_-]/g, '_')}`,
           Author: 'VAMTech Pvt Ltd',
@@ -67,8 +72,8 @@ export function generateOfferLetterPDFBuffer(
       // Helper function to draw company header
       const drawHeader = () => {
         if (fs.existsSync(logoPath)) {
-          doc.image(logoPath, (doc.page.width - 145) / 2, 28, { width: 145 });
-          doc.y = 76;
+          doc.image(logoPath, (doc.page.width - 145) / 2, 24, { width: 145 });
+          doc.y = 70;
         } else {
           doc.fontSize(16).font('Helvetica-Bold').fillColor('#0f172a').text('VAMTech Pvt Ltd', { align: 'center' });
         }
@@ -77,7 +82,7 @@ export function generateOfferLetterPDFBuffer(
         doc.fontSize(7.5).font('Helvetica').fillColor('#4b5563')
            .text('Tiwariganj, Lucknow, Uttar Pradesh 226028, India | contactvamtech@gmail.com | +91 72379 00686 | www.vamtech.in', { align: 'center' });
 
-        doc.moveDown(0.4);
+        doc.moveDown(0.35);
         doc.strokeColor('#111827').lineWidth(1)
            .moveTo(45, doc.y).lineTo(doc.page.width - 45, doc.y).stroke();
         doc.moveDown(0.5);
@@ -96,156 +101,297 @@ export function generateOfferLetterPDFBuffer(
         doc.restore();
       };
 
-      // Helper function to draw footer
-      const drawFooter = () => {
-        const bottomY = doc.page.height - 28;
-        doc.fontSize(8).font('Helvetica').fillColor('#94a3b8')
-           .text('VAMTech Pvt Ltd • portal.vamtech.in • Private & Confidential', 45, bottomY, {
-             width: doc.page.width - 90,
-             align: 'center',
-           });
+      // Helper to draw clean bullet point
+      const drawBulletItem = (text: string, indent: number = 60, widthReduction: number = 105) => {
+        const itemY = doc.y;
+        doc.circle(indent - 7, itemY + 4.5, 1.6).fill('#111827');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827')
+           .text(text, indent, itemY, { width: doc.page.width - widthReduction, align: 'left', lineGap: 1.2 });
+        doc.moveDown(0.15);
       };
+
+      const isInternship = type === 'UNPAID_INTERNSHIP' || type === 'PAID_INTERNSHIP';
+      const isPaid = type === 'PAID_INTERNSHIP';
+      const firstName = details.candidateName ? details.candidateName.split(' ')[0] : 'Candidate';
 
       // ================= PAGE 1 =================
       drawWatermark();
       drawHeader();
 
-      // Meta Section (Ref & Date)
-      const metaY = doc.y;
+      // Date & Ref No (matching template)
       doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827')
-         .text('Ref: ', 45, metaY, { continued: true }).font('Helvetica').text(details.offerRefNumber);
-      doc.fontSize(9.5).font('Helvetica-Bold')
-         .text('Date: ', doc.page.width - 200, metaY, { width: 155, align: 'right', continued: true })
+         .text('Date: ', 45, doc.y, { continued: true })
          .font('Helvetica').text(details.date);
+      doc.fontSize(9.5).font('Helvetica-Bold')
+         .text('Ref No: ', 45, doc.y, { continued: true })
+         .font('Helvetica').text(details.offerRefNumber);
 
-      doc.moveDown(0.7);
+      doc.moveDown(0.5);
 
       // To Section
       doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('To,');
       doc.fontSize(9.5).font('Helvetica-Bold').text(details.candidateName);
-      doc.fontSize(9).font('Helvetica').fillColor('#374151').text(details.candidateAddress || 'Lucknow, Uttar Pradesh, 226028');
-      if (details.candidateEmail || details.candidatePhone) {
-        doc.fontSize(9).font('Helvetica').fillColor('#374151')
-           .text(`${details.candidateEmail}${details.candidatePhone ? ` | ${details.candidatePhone}` : ''}`);
+      if (details.candidateAddress) {
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').text(details.candidateAddress);
+      }
+      const contactLine = [
+        details.candidateEmail,
+        details.candidatePhone,
+      ].filter(Boolean).join(' | ');
+      if (contactLine) {
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').text(contactLine);
       }
 
-      doc.moveDown(0.7);
+      doc.moveDown(0.55);
 
-      // Subject
-      const isInternship = type === 'UNPAID_INTERNSHIP' || type === 'PAID_INTERNSHIP';
-      const isPaid = type === 'PAID_INTERNSHIP';
+      // Subject line (Centered, Bold, Underlined)
       const subjectText = isInternship
-        ? `Sub: Offer of Internship for the position of ${details.designation}`
-        : `Sub: Offer of Employment - ${details.designation}`;
+        ? `Subject: Offer of Internship — ${details.designation} (${isPaid ? 'Paid' : 'Unpaid'})`
+        : `Subject: Offer of Employment — ${details.designation}`;
 
-      doc.fontSize(10).font('Helvetica-Bold').fillColor('#000000')
+      doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#000000')
          .text(subjectText, 45, doc.y, { align: 'center', underline: true, width: doc.page.width - 90 });
 
-      doc.moveDown(0.7);
+      doc.moveDown(0.55);
 
-      // Salutation & Intro
-      const firstName = details.candidateName ? details.candidateName.split(' ')[0] : 'Candidate';
-      doc.fontSize(9.5).font('Helvetica').fillColor('#111827')
-         .text(`Dear ${firstName},`);
+      // Salutation
+      doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text(`Dear ${firstName},`);
+      doc.moveDown(0.3);
+
+      // Opening paragraphs
+      const openingP1 = isInternship
+        ? `We are pleased to offer you the position of ${details.designation} at VAMTech Pvt Ltd, based on your application and the subsequent interview(s) held with our team. We were impressed with your skills and enthusiasm, and we believe you will be a valuable addition to our team.`
+        : `We are pleased to offer you the position of ${details.designation} at VAMTech Pvt Ltd, based on your application and the subsequent interview(s) held with our team. We believe your experience and capabilities will significantly contribute to our growth and innovation.`;
+
+      doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+         .text(openingP1, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+      doc.moveDown(0.3);
+
+      const openingP2 = isInternship
+        ? `This letter outlines the terms and conditions of your internship. Please read them carefully, and if you agree, sign and return a copy of this letter to us as a token of your acceptance.`
+        : `This letter outlines the terms and conditions of your employment. Please read them carefully, and if you agree, sign and return a copy of this letter to us as a token of your acceptance.`;
+
+      doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+         .text(openingP2, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
       doc.moveDown(0.4);
 
       if (isInternship) {
-        doc.fontSize(9.5).font('Helvetica').fillColor('#111827').lineGap(2)
-           .text(`We are pleased to offer you an internship opportunity with VAMTech Pvt Ltd as ${details.designation}. We believe your skills and enthusiasm will be a valuable addition to our engineering team.`, { align: 'justify' });
-        doc.moveDown(0.5);
-
-        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('Terms and Conditions of Internship:');
+        // Section 1: Position and Role
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('1. Position and Role');
+        doc.moveDown(0.2);
+        drawBulletItem(`Designation: ${details.designation}`);
+        drawBulletItem(`Department: ${details.department || 'Engineering'}`);
+        drawBulletItem(`Reporting Manager: ${details.reportingManager || 'Aditya Gupta, HR'}`);
+        drawBulletItem(`Work Location: ${details.workLocation || 'Remote'}`);
         doc.moveDown(0.3);
 
-        const items = [
-          `1. Designation & Department: You will be designated as ${details.designation} in the ${details.department || 'Engineering'} Department.`,
-          `2. Duration & Schedule: The internship will be for a duration of ${details.duration || '3 months'}, starting from ${details.startDate || details.date} to ${details.endDate || '5 December 2026'}. Working hours will be ${details.workingHours || '10:00 AM to 5:00 PM, 5 days a week (Monday to Friday)'}.`,
-          `3. Work Location: Your work location will be ${details.workLocation || 'Remote'}. You will report to ${details.reportingManager || 'Aditya Gupta, HR'}.`,
-          isPaid
-            ? `4. Stipend: You will receive a monthly stipend of Rs. ${(details.stipendAmount || 5000).toLocaleString('en-IN')}/- upon satisfactory performance.`
-            : `4. Stipend: This is an unpaid internship for learning and skill development. No financial stipend will be provided.`,
-          `5. Confidentiality: You will be required to sign and adhere to the company's Non-Disclosure Agreement (NDA). Any proprietary technology, codebase, client data, or business strategy must be kept strictly confidential during and after your internship.`,
-          `6. Intellectual Property: Any software, code, designs, or documentation produced during your internship shall remain the exclusive intellectual property of VAMTech Pvt Ltd.`,
-          `7. Code of Conduct: You are expected to conduct yourself in a professional manner, follow company policies, maintain clear communication with your mentor, and deliver tasks within agreed timelines.`,
-        ];
+        // Section 2: Duration
+        const durationText = details.duration || '3 months';
+        const startText = details.startDate || '5 September 2026';
+        const endText = details.endDate || '5 December 2026';
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('2. Duration');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`The internship will be for a period of ${durationText}, commencing on ${startText} and ending on ${endText}, unless extended or terminated earlier as per the terms below.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.3);
 
-        items.forEach((it) => {
-          doc.fontSize(9.5).font('Helvetica').fillColor('#111827').text(it, 55, doc.y, { width: doc.page.width - 100, align: 'justify', lineGap: 1.5 });
-          doc.moveDown(0.25);
-        });
+        // Section 3: Stipend
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('3. Stipend');
+        if (isPaid) {
+          const amount = details.stipendAmount || 5000;
+          const words = numberToWords(amount);
+          doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+             .text(`You will be paid a monthly stipend of Rs. ${amount.toLocaleString('en-IN')} (${words}), payable on or before the 7th of every month, subject to applicable deductions, if any.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        } else {
+          doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+             .text(`This is an unpaid internship. No stipend, salary, or monetary compensation will be paid for the duration of the internship. Any expenses incurred, if applicable, will be governed by VAMTech Pvt Ltd's policy in this regard, if any.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        }
+        doc.moveDown(0.3);
+
+        // Section 4: Working Hours
+        const hoursText = details.workingHours || '10:00 AM to 5:00 PM, 5 days a week (Monday to Friday)';
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('4. Working Hours');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`Your standard working hours will be from ${hoursText}. You may occasionally be required to put in additional hours to meet project deadlines.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.3);
+
+        // Section 5: Roles and Responsibilities
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('5. Roles and Responsibilities');
+        doc.moveDown(0.2);
+        drawBulletItem('Design, develop, and maintain full stack web applications (frontend and backend).');
+        drawBulletItem('Build and integrate RESTful APIs and work with databases as required.');
+        drawBulletItem('Write clean, maintainable, and well-documented code.');
+        drawBulletItem('Participate in code reviews, stand-ups, and sprint planning sessions.');
+        drawBulletItem('Assist in debugging, testing, and deploying features under guidance.');
+        doc.moveDown(0.3);
+
+        // Section 6: Probation and Performance Review
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('6. Probation and Performance Review');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`Your performance will be reviewed periodically during the internship. Based on your performance, conduct, and business requirements, you may be considered for a full-time role and/or extension of the internship at the sole discretion of VAMTech Pvt Ltd.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
       } else {
-        // Full time
-        doc.fontSize(9.5).font('Helvetica').fillColor('#111827').lineGap(2)
-           .text(`We are pleased to offer you the position of ${details.designation} at VAMTech Pvt Ltd. We believe your experience and capabilities will significantly contribute to our growth and innovation.`, { align: 'justify' });
-        doc.moveDown(0.5);
-
-        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('Terms and Conditions of Employment:');
+        // Full Time Page 1
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('1. Position and Role');
+        doc.moveDown(0.2);
+        drawBulletItem(`Designation: ${details.designation}`);
+        drawBulletItem(`Department: ${details.department || 'Engineering'}`);
+        drawBulletItem(`Reporting Manager: ${details.reportingManager || 'Aditya Gupta, HR'}`);
+        drawBulletItem(`Work Location: ${details.workLocation || 'Remote'}`);
         doc.moveDown(0.3);
 
-        const items = [
-          `1. Designation: ${details.designation} in the ${details.department || 'Engineering'} Department.`,
-          `2. Date of Joining: Your employment will commence on ${details.dateOfJoining || details.startDate || details.date}.`,
-          `3. Compensation: Your Annual Cost to Company (CTC) will be Rs. ${(details.annualCtc || 1200000).toLocaleString('en-IN')}/- as per agreed structure.`,
-          `4. Probation Period: You will be on probation for a period of ${details.probationPeriod || '6 Months'} from the date of joining.`,
-          `5. Notice Period: Following confirmation, either party may terminate employment with ${details.noticePeriod || '60 Days'} written notice or salary in lieu thereof.`,
-          `6. Confidentiality & IP: All proprietary systems, trade secrets, software code, and client confidential information remain exclusive property of VAMTech Pvt Ltd.`,
-        ];
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('2. Date of Joining');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`Your employment will commence on ${details.dateOfJoining || details.startDate || details.date}, unless mutually agreed otherwise in writing.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.3);
 
-        items.forEach((it) => {
-          doc.fontSize(9.5).font('Helvetica').fillColor('#111827').text(it, 55, doc.y, { width: doc.page.width - 100, align: 'justify', lineGap: 1.5 });
-          doc.moveDown(0.25);
-        });
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('3. Compensation');
+        const ctc = details.annualCtc || 1200000;
+        const ctcWords = numberToWords(ctc);
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`Your Annual Cost to Company (CTC) will be Rs. ${ctc.toLocaleString('en-IN')} (${ctcWords}), payable on a monthly basis subject to statutory tax deductions and company policy.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.3);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('4. Working Hours');
+        const ftHours = details.workingHours || '10:00 AM to 6:00 PM, 5 days a week (Monday to Friday)';
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`Your standard working hours will be from ${ftHours}. You may occasionally be required to put in additional hours to meet project milestones.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.3);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('5. Roles and Responsibilities');
+        doc.moveDown(0.2);
+        drawBulletItem('Lead architecture, development, and maintenance of scalable web applications.');
+        drawBulletItem('Develop robust RESTful and real-time backend microservices with database design.');
+        drawBulletItem('Write maintainable, performant, and well-tested code following best practices.');
+        drawBulletItem('Collaborate with cross-functional teams, conduct code reviews, and mentor engineers.');
+        drawBulletItem('Drive continuous delivery, performance optimization, and system reliability.');
+        doc.moveDown(0.3);
+
+        doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('6. Probation and Confirmation');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
+           .text(`You will be on probation for a period of ${details.probationPeriod || '6 Months'} from your date of joining. Upon satisfactory performance, your services will be confirmed in writing.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
       }
 
-      drawFooter();
-
       // ================= PAGE 2 =================
-      doc.addPage({ size: 'A4', margins: { top: 32, bottom: 32, left: 45, right: 45 } });
+      doc.addPage({ size: 'A4', margins: { top: 40, bottom: 35, left: 45, right: 45 } });
       drawWatermark();
-      drawHeader();
 
-      doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('8. Termination:');
-      doc.fontSize(9.5).font('Helvetica').fillColor('#111827').lineGap(1.5)
-         .text('The company reserves the right to terminate this agreement immediately without notice in the event of misconduct, breach of confidentiality, violation of company policies, or non-performance.', 55, doc.y, { width: doc.page.width - 100, align: 'justify' });
+      if (isInternship) {
+        // Section 7: Confidentiality
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('7. Confidentiality', 45, 40);
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`During and after the term of this internship, you agree to keep confidential all proprietary information, source code, business data, and trade secrets of VAMTech Pvt Ltd and its clients, and not to disclose the same to any third party without prior written consent.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.6);
 
-      doc.moveDown(0.5);
-      doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('9. Certificate & Documentation:');
-      doc.fontSize(9.5).font('Helvetica').fillColor('#111827').lineGap(1.5)
-         .text('Upon successful completion of the tenure and satisfactory fulfillment of assigned responsibilities, you will be awarded an official Certificate of Completion and Letter of Recommendation (LOR) or Service Relieving Letter.', 55, doc.y, { width: doc.page.width - 100, align: 'justify' });
+        // Section 8: Code of Conduct
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('8. Code of Conduct');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`You are expected to adhere to VAMTech Pvt Ltd's policies, code of conduct, and instructions issued by your reporting manager from time to time, including those related to attendance, data security, and use of company resources.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.6);
 
-      doc.moveDown(0.8);
-      doc.fontSize(9.5).font('Helvetica').fillColor('#111827')
-         .text('Please confirm your acceptance of this offer by signing and returning the duplicate copy of this letter within 3 business days.');
+        // Section 9: Termination
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('9. Termination');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`Either party may terminate this internship by providing 7 days' written notice. VAMTech Pvt Ltd reserves the right to terminate this internship with immediate effect in case of misconduct, breach of confidentiality, or unsatisfactory performance.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.6);
 
-      doc.moveDown(1.2);
-      doc.fontSize(9.5).font('Helvetica').fillColor('#111827').text('Sincerely,');
-      doc.fontSize(9.5).font('Helvetica-Bold').text('For VAMTech Pvt Ltd');
+        // Section 10: Certificate and Letter of Recommendation
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('10. Certificate and Letter of Recommendation');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`On successful completion of the internship, you will be issued an Internship Completion Certificate. A Letter of Recommendation may be provided based on your performance during the internship.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.7);
 
-      doc.moveDown(1.8);
-      doc.strokeColor('#64748b').lineWidth(1)
-         .moveTo(45, doc.y).lineTo(220, doc.y).stroke();
-      doc.moveDown(0.3);
-      doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text(details.hrName || 'Aditya Gupta');
-      doc.fontSize(9).font('Helvetica').fillColor('#4b5563').text('HR & Talent Acquisition Team');
-      doc.fontSize(8.5).font('Helvetica').fillColor('#64748b').text('contactvamtech@gmail.com | +91 72379 00686');
+        // Closing note
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`Please sign and return a copy of this letter to indicate your acceptance of the above terms and conditions. We look forward to having you on the VAMTech team and wish you a great learning experience with us.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(1.2);
 
-      doc.moveDown(1.2);
-      doc.strokeColor('#94a3b8').lineWidth(1)
-         .moveTo(45, doc.y).lineTo(doc.page.width - 45, doc.y).stroke();
-      doc.moveDown(0.8);
+        // Sign-off
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').text('Warm regards,');
+        doc.fontSize(9).font('Helvetica-Bold').text('For VAMTech Pvt Ltd,');
+        doc.moveDown(2.2);
 
-      doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('Acceptance of Offer');
-      doc.moveDown(0.3);
-      doc.fontSize(9.5).font('Helvetica').fillColor('#111827').lineGap(1.5)
-         .text(`I, ${details.candidateName}, have read, understood, and accept the terms and conditions outlined in this offer letter. I confirm my acceptance of the offer for the position of ${details.designation} at VAMTech Pvt Ltd.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        // Line for signature
+        doc.strokeColor('#475569').lineWidth(0.8)
+           .moveTo(45, doc.y).lineTo(190, doc.y).stroke();
+        doc.moveDown(0.3);
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text(details.hrName || 'Aditya Gupta');
+        doc.fontSize(9).font('Helvetica').fillColor('#374151').text('HR, VAMTech Pvt Ltd');
+        doc.moveDown(1.4);
 
-      doc.moveDown(2.2);
-      doc.strokeColor('#64748b').lineWidth(1)
-         .moveTo(45, doc.y).lineTo(250, doc.y).stroke();
-      doc.moveDown(0.3);
-      doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('Candidate Signature & Date');
+        // Divider
+        doc.strokeColor('#94a3b8').lineWidth(0.8)
+           .moveTo(45, doc.y).lineTo(doc.page.width - 45, doc.y).stroke();
+        doc.moveDown(0.8);
 
-      drawFooter();
+        // Acceptance Block
+        doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('Acceptance');
+        doc.moveDown(0.3);
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`I, ${details.candidateName}, accept the offer of internship as ${details.designation} at VAMTech Pvt Ltd on the terms and conditions mentioned above.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(2.5);
+
+        // Candidate Signature Line
+        doc.strokeColor('#475569').lineWidth(0.8)
+           .moveTo(45, doc.y).lineTo(230, doc.y).stroke();
+        doc.moveDown(0.3);
+        doc.fontSize(9).font('Helvetica').fillColor('#374151').text('Candidate Signature & Date');
+      } else {
+        // Full Time Page 2
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('7. Confidentiality and Intellectual Property', 45, 40);
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`During and after your employment with VAMTech Pvt Ltd, you agree to maintain absolute confidentiality regarding all proprietary information, trade secrets, software code, client records, and business data. All intellectual property developed during your tenure belongs exclusively to VAMTech Pvt Ltd.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.6);
+
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('8. Code of Conduct');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`You are required to adhere to VAMTech Pvt Ltd's policies, ethical standards, security guidelines, and professional code of conduct at all times, maintaining diligence, integrity, and respect for company resources.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.6);
+
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('9. Notice Period and Termination');
+        const noticePeriod = details.noticePeriod || '60 Days';
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`Following probation confirmation, either party may terminate employment by giving ${noticePeriod} written notice or gross salary in lieu thereof. The company reserves the right to terminate employment immediately without notice in cases of gross misconduct or breach of confidentiality.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.6);
+
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('10. Documentation and Relieving');
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`Upon successful completion of tenure, satisfactory handover of assets, and settlement of obligations, you will be issued a formal Service Relieving Certificate and Work Experience Letter.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(0.7);
+
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`Please sign and return a copy of this letter to indicate your acceptance of the above terms and conditions. We look forward to welcoming you to VAMTech and building high-impact technology together.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(1.2);
+
+        // Sign-off
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').text('Warm regards,');
+        doc.fontSize(9).font('Helvetica-Bold').text('For VAMTech Pvt Ltd,');
+        doc.moveDown(2.2);
+
+        // Line for signature
+        doc.strokeColor('#475569').lineWidth(0.8)
+           .moveTo(45, doc.y).lineTo(190, doc.y).stroke();
+        doc.moveDown(0.3);
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text(details.hrName || 'Aditya Gupta');
+        doc.fontSize(9).font('Helvetica').fillColor('#374151').text('HR, VAMTech Pvt Ltd');
+        doc.moveDown(1.4);
+
+        // Divider
+        doc.strokeColor('#94a3b8').lineWidth(0.8)
+           .moveTo(45, doc.y).lineTo(doc.page.width - 45, doc.y).stroke();
+        doc.moveDown(0.8);
+
+        // Acceptance Block
+        doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('Acceptance');
+        doc.moveDown(0.3);
+        doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
+           .text(`I, ${details.candidateName}, accept the offer of employment as ${details.designation} at VAMTech Pvt Ltd on the terms and conditions mentioned above.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+        doc.moveDown(2.5);
+
+        // Candidate Signature Line
+        doc.strokeColor('#475569').lineWidth(0.8)
+           .moveTo(45, doc.y).lineTo(230, doc.y).stroke();
+        doc.moveDown(0.3);
+        doc.fontSize(9).font('Helvetica').fillColor('#374151').text('Candidate Signature & Date');
+      }
 
       doc.end();
     } catch (e) {
@@ -253,6 +399,7 @@ export function generateOfferLetterPDFBuffer(
     }
   });
 }
+
 
 /**
  * Generate PDF Buffer for generic employee vault document

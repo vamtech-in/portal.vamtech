@@ -17,12 +17,18 @@ export async function sendEmail({
   to,
   subject,
   html,
+  attachments,
 }: {
   to: string;
   subject: string;
   html: string;
+  attachments?: Array<{
+    filename: string;
+    content: Buffer;
+    contentType?: string;
+  }>;
 }): Promise<{ success: boolean; id?: string; error?: string; isSandboxRestriction?: boolean }> {
-  console.log(`[EMAIL DISPATCH] To: ${to} | Subject: ${subject}`);
+  console.log(`[EMAIL DISPATCH] To: ${to} | Subject: ${subject}${attachments ? ` | Attachments: ${attachments.length}` : ''}`);
 
   // Store in Dev Outbox
   const emailItem: DevEmail = {
@@ -44,6 +50,7 @@ export async function sendEmail({
         replyTo: replyToAddress,
         subject,
         html,
+        attachments: attachments && attachments.length > 0 ? attachments : undefined,
       });
 
       if (response.error) {
@@ -71,6 +78,7 @@ export async function sendEmail({
                 </div>
                 ${html}
               `,
+              attachments: attachments && attachments.length > 0 ? attachments : undefined,
             });
           } catch (fwdErr) {
             console.error('[RESEND FORWARD ERROR]', fwdErr);
@@ -234,32 +242,115 @@ export async function sendOfferLetterEmail({
   name,
   offerRefNumber,
   offerType,
+  designation,
+  stipendOrCtc,
+  startDate,
+  pdfBuffer,
+  downloadUrl,
 }: {
   email: string;
   name: string;
   offerRefNumber: string;
   offerType: string;
+  designation?: string;
+  stipendOrCtc?: string;
+  startDate?: string;
+  pdfBuffer?: Buffer;
+  downloadUrl?: string;
 }) {
+  const isInternship = offerType === 'UNPAID_INTERNSHIP' || offerType === 'PAID_INTERNSHIP';
+  const roleTitle = designation || (isInternship ? 'Intern' : 'Employee');
+  const typeDisplay = offerType.replace(/_/g, ' ');
+  const cleanRef = offerRefNumber.replace(/[^a-zA-Z0-9_-]/g, '_');
+
   const html = `
-    <div style="font-family: 'Inter', sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; color: #0f172a; border: 1px solid #e2e8f0; padding: 30px; border-radius: 12px;">
-      <div style="border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; margin-bottom: 20px;">
-        <h1 style="color: #0f172a; font-size: 24px; margin: 0;">VAMTech Pvt Ltd</h1>
-        <p style="color: #f9572a; font-size: 14px; font-weight: bold; margin: 5px 0 0 0;">Official Offer Letter Notification</p>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: 0 auto; background: #ffffff; color: #0f172a; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+      <!-- Header banner -->
+      <div style="background: #0f172a; padding: 28px 32px; text-align: center;">
+        <h1 style="color: #ffffff; font-size: 22px; margin: 0; font-weight: 700; letter-spacing: -0.5px;">VAMTech Pvt Ltd</h1>
+        <p style="color: #f9572a; font-size: 13px; font-weight: 600; margin: 6px 0 0 0; text-transform: uppercase; letter-spacing: 1px;">
+          ${isInternship ? 'Official Internship Offer' : 'Official Employment Offer'}
+        </p>
       </div>
-      <p style="font-size: 16px; color: #334155;">Dear ${name},</p>
-      <p style="font-size: 15px; color: #475569; line-height: 1.6;">
-        We are delighted to extend an official offer of employment at VAMTech Pvt Ltd for the role specified in your application.
-      </p>
-      <div style="background: #fff5f2; border-left: 4px solid #f9572a; padding: 15px; margin: 25px 0; border-radius: 6px;">
-        <p style="margin: 0; font-size: 12px; color: #64748b; text-transform: uppercase;">Offer Reference Number</p>
-        <p style="margin: 5px 0 0 0; font-size: 20px; font-weight: bold; color: #f9572a; font-family: monospace;">${offerRefNumber}</p>
-        <p style="margin: 8px 0 0 0; font-size: 14px; color: #0f172a;">Type: <strong>${offerType.replace('_', ' ')}</strong></p>
+
+      <!-- Main Body -->
+      <div style="padding: 32px;">
+        <p style="font-size: 16px; color: #0f172a; margin-top: 0;">Dear <strong>${name}</strong>,</p>
+        <p style="font-size: 14.5px; color: #334155; line-height: 1.6;">
+          We are pleased to offer you the position of <strong>${roleTitle}</strong> at <strong>VAMTech Pvt Ltd</strong>. Our team was impressed by your skills and potential, and we look forward to having you with us.
+        </p>
+
+        <!-- Offer Details Card -->
+        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-left: 4px solid #f9572a; border-radius: 8px; padding: 18px 20px; margin: 24px 0;">
+          <table style="width: 100%; border-collapse: collapse; font-size: 13.5px;">
+            <tr>
+              <td style="padding: 6px 0; color: #64748b; width: 40%;">Offer Reference:</td>
+              <td style="padding: 6px 0; font-weight: 700; color: #0f172a; font-family: monospace; font-size: 14px;">${offerRefNumber}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">Designation:</td>
+              <td style="padding: 6px 0; font-weight: 600; color: #0f172a;">${roleTitle}</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">Offer Type:</td>
+              <td style="padding: 6px 0; font-weight: 600; color: #0f172a;">${typeDisplay}</td>
+            </tr>
+            ${startDate ? `
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">Commencement Date:</td>
+              <td style="padding: 6px 0; font-weight: 600; color: #0f172a;">${startDate}</td>
+            </tr>
+            ` : ''}
+            ${stipendOrCtc ? `
+            <tr>
+              <td style="padding: 6px 0; color: #64748b;">Compensation / Stipend:</td>
+              <td style="padding: 6px 0; font-weight: 700; color: #16a34a;">${stipendOrCtc}</td>
+            </tr>
+            ` : ''}
+          </table>
+        </div>
+
+        <!-- Attachment Notice Callout -->
+        <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 14px 18px; margin: 20px 0; display: flex; align-items: center;">
+          <p style="margin: 0; font-size: 13.5px; color: #1e40af; line-height: 1.5;">
+            📄 <strong>Official Offer Letter Attached:</strong> Your formal, signed Offer Letter is attached to this email as a PDF document (<code>Offer_Letter_${cleanRef}.pdf</code>).
+          </p>
+        </div>
+
+        ${downloadUrl ? `
+        <!-- Direct Download Button -->
+        <div style="text-align: center; margin: 28px 0;">
+          <a href="${downloadUrl}" style="background-color: #f9572a; color: #ffffff; text-decoration: none; padding: 13px 28px; border-radius: 6px; font-weight: 600; font-size: 14.5px; display: inline-block; box-shadow: 0 2px 4px rgba(249, 87, 42, 0.2);">
+            📥 Download Offer Letter (PDF)
+          </a>
+          <p style="margin: 8px 0 0 0; font-size: 11.5px; color: #94a3b8;">
+            Direct secure download via VAMTech Portal
+          </p>
+        </div>
+        ` : ''}
+
+        <!-- Next Steps -->
+        <div style="margin-top: 26px; border-top: 1px solid #f1f5f9; padding-top: 20px;">
+          <h3 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 700; color: #0f172a;">Next Steps to Confirm Your Acceptance:</h3>
+          <ol style="margin: 0; padding-left: 20px; font-size: 13.5px; color: #475569; line-height: 1.7;">
+            <li>Review the attached Offer Letter and understand all terms & conditions.</li>
+            <li>Sign the <strong>Acceptance block</strong> on Page 2 and reply to this email (<code>contactvamtech@gmail.com</code>) with your signed copy.</li>
+            <li>Our onboarding team will guide you through system account credentials and joining formalities.</li>
+          </ol>
+        </div>
+
+        <!-- Signoff -->
+        <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
+          <p style="margin: 0; font-size: 13.5px; color: #334155;">Warm regards,</p>
+          <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 700; color: #0f172a;">HR & Talent Acquisition Team</p>
+          <p style="margin: 2px 0 0 0; font-size: 12.5px; color: #64748b;">VAMTech Pvt Ltd &bull; portal.vamtech.in</p>
+          <p style="margin: 2px 0 0 0; font-size: 12px; color: #94a3b8;">Tiwariganj, Lucknow, Uttar Pradesh 226028 | contactvamtech@gmail.com</p>
+        </div>
       </div>
-      <p style="font-size: 15px; color: #475569; line-height: 1.6;">
-        Your formal offer letter has been generated and attached to your application record. Please review the terms and communicate your acceptance with HR.
-      </p>
-      <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 30px; font-size: 12px; color: #94a3b8; text-align: center;">
-        VAMTech Pvt Ltd HR Team &bull; portal.vamtech.in
+
+      <!-- Footer -->
+      <div style="background: #f8fafc; border-top: 1px solid #e2e8f0; padding: 14px 32px; text-align: center; font-size: 11.5px; color: #94a3b8;">
+        This email and any attachments are confidential and intended solely for the recipient. If you have received this message in error, please notify HR immediately.
       </div>
     </div>
   `;
@@ -268,6 +359,13 @@ export async function sendOfferLetterEmail({
     to: email,
     subject: `Official Offer Letter (${offerRefNumber}) - VAMTech Pvt Ltd`,
     html,
+    attachments: pdfBuffer ? [
+      {
+        filename: `Offer_Letter_${cleanRef}.pdf`,
+        content: pdfBuffer,
+        contentType: 'application/pdf',
+      },
+    ] : undefined,
   });
 }
 

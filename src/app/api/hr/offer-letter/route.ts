@@ -143,12 +143,31 @@ export async function POST(request: Request) {
       data: { status: 'Offer Sent' },
     });
 
-    // Send email with offer letter notification
+    // Generate secure download URL for the candidate
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://portal.vamtech.in';
+    const downloadUrl = `${baseUrl}/api/documents/offer-letter/${offerRecord.id}`;
+
+    // Format compensation or stipend string for email summary
+    let stipendOrCtc: string | undefined;
+    if (type === 'PAID_INTERNSHIP') {
+      stipendOrCtc = `Rs. ${(offerDetails.stipendAmount || 5000).toLocaleString('en-IN')} / month`;
+    } else if (type === 'UNPAID_INTERNSHIP') {
+      stipendOrCtc = 'Unpaid (Skill Development Internship)';
+    } else if (type === 'FULL_TIME') {
+      stipendOrCtc = `Rs. ${(offerDetails.annualCtc || 1200000).toLocaleString('en-IN')} / annum (CTC)`;
+    }
+
+    // Send email with PDF offer letter attached
     const emailResult = await sendOfferLetterEmail({
       email: candidate.email,
       name: candidate.name,
       offerRefNumber,
       offerType: type,
+      designation: offerDetails.designation,
+      stipendOrCtc,
+      startDate: offerDetails.startDate || offerDetails.dateOfJoining || offerDetails.date,
+      pdfBuffer,
+      downloadUrl,
     });
 
     let message = `Offer letter ${offerRefNumber} generated successfully! Candidate status updated to Offer Sent.`;
