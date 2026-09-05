@@ -36,10 +36,12 @@ export async function sendEmail({
 
   if (resend) {
     try {
-      const fromAddress = process.env.RESEND_FROM_EMAIL || 'VAMTech Portal <onboarding@resend.dev>';
+      const fromAddress = process.env.RESEND_FROM_EMAIL || 'VAMTech HR <hr@vamtech.in>';
+      const replyToAddress = process.env.HR_EMAIL || 'contactvamtech@gmail.com';
       const response = await resend.emails.send({
         from: fromAddress,
         to: [to],
+        replyTo: replyToAddress,
         subject,
         html,
       });
