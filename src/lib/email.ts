@@ -1,6 +1,25 @@
+import nodemailer from 'nodemailer';
 import { Resend } from 'resend';
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+
+// Gmail SMTP Transporter (for direct sending from contactvamtech@gmail.com)
+function getSmtpTransporter() {
+  const smtpUser = process.env.SMTP_USER || process.env.HR_EMAIL || 'contactvamtech@gmail.com';
+  const smtpPass = process.env.SMTP_PASS?.replace(/\s+/g, '');
+  if (!smtpPass) return null;
+
+  return {
+    user: smtpUser,
+    transporter: nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: smtpUser,
+        pass: smtpPass,
+      },
+    }),
+  };
+}
 
 export interface DevEmail {
   id: string;
@@ -40,6 +59,33 @@ export async function sendEmail({
   };
   devEmailOutbox.unshift(emailItem);
 
+  // 1. First priority: Direct Gmail SMTP if SMTP_PASS is provided
+  const smtpConfig = getSmtpTransporter();
+  if (smtpConfig) {
+    try {
+      console.log(`[GMAIL SMTP] Dispatching directly from ${smtpConfig.user} to ${to}`);
+      const info = await smtpConfig.transporter.sendMail({
+        from: `"VAMTech" <${smtpConfig.user}>`,
+        to,
+        replyTo: smtpConfig.user,
+        subject,
+        html,
+        attachments: attachments?.map((att) => ({
+          filename: att.filename,
+          content: att.content,
+          contentType: att.contentType,
+        })),
+      });
+
+      console.log('[GMAIL SMTP SUCCESS] Message ID:', info.messageId);
+      return { success: true, id: info.messageId };
+    } catch (smtpErr: any) {
+      console.error('[GMAIL SMTP FAILED]', smtpErr);
+      // Fall through to Resend if configured
+    }
+  }
+
+  // 2. Second priority: Resend API
   if (resend) {
     try {
       const fromAddress = process.env.RESEND_FROM_EMAIL || 'VAMTech HR <hr@vamtech.in>';
