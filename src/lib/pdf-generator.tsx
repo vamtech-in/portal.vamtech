@@ -2,6 +2,14 @@ import PDFDocument from 'pdfkit';
 import fs from 'fs';
 import path from 'path';
 
+// Statically import standard fonts so Next.js serverless NFT bundler includes them in Lambda container
+import 'pdfkit/standard-fonts/Helvetica';
+import 'pdfkit/standard-fonts/HelveticaBold';
+import 'pdfkit/standard-fonts/HelveticaOblique';
+import 'pdfkit/standard-fonts/HelveticaBoldOblique';
+import 'pdfkit/standard-fonts/TimesRoman';
+import 'pdfkit/standard-fonts/TimesBold';
+
 export interface OfferDetails {
   candidateName: string;
   candidateAddress: string;

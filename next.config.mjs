@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   serverExternalPackages: ['@react-pdf/renderer', 'pdfkit'],
+  outputFileTracingIncludes: {
+    '/api/**/*': ['./node_modules/pdfkit/**/*'],
+  },
   async headers() {
     return [
       {
