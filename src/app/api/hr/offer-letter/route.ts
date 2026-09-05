@@ -144,18 +144,25 @@ export async function POST(request: Request) {
     });
 
     // Send email with offer letter notification
-    await sendOfferLetterEmail({
+    const emailResult = await sendOfferLetterEmail({
       email: candidate.email,
       name: candidate.name,
       offerRefNumber,
       offerType: type,
     });
 
+    let message = `Offer letter ${offerRefNumber} generated successfully! Candidate status updated to Offer Sent.`;
+    if (emailResult.success) {
+      message += ` Email notification delivered to ${candidate.email}.`;
+    } else if (emailResult.isSandboxRestriction) {
+      message += ` (Email Notice: Resend is in testing mode; candidate emails require domain verification at resend.com/domains. A copy was forwarded to ${process.env.HR_EMAIL || 'contactvamtech@gmail.com'}).`;
+    }
+
     return NextResponse.json({
       success: true,
       offerRefNumber,
       offerRecord,
-      message: `Offer letter ${offerRefNumber} generated and emailed to ${candidate.email}! Candidate status updated to Offer Sent.`,
+      message,
     });
   } catch (error: any) {
     console.error('Offer letter generation error', error);

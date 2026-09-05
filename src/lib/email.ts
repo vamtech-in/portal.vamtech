@@ -21,7 +21,7 @@ export async function sendEmail({
   to: string;
   subject: string;
   html: string;
-}): Promise<{ success: boolean; id?: string }> {
+}): Promise<{ success: boolean; id?: string; error?: string; isSandboxRestriction?: boolean }> {
   console.log(`[EMAIL DISPATCH] To: ${to} | Subject: ${subject}`);
 
   // Store in Dev Outbox
@@ -43,9 +43,50 @@ export async function sendEmail({
         subject,
         html,
       });
+
+      if (response.error) {
+        console.error('[RESEND ERROR]', response.error);
+
+        const errorObj = response.error as any;
+        const isSandbox = (errorObj?.statusCode === 403 || errorObj?.name === 'validation_error') &&
+                          errorObj?.message?.includes('testing emails');
+        const hrEmail = process.env.HR_EMAIL || 'contactvamtech@gmail.com';
+
+        // In Resend sandbox mode, emails to unverified recipients are blocked.
+        // Forward a copy directly to the verified HR account so the company always receives the record.
+        if (isSandbox && to.toLowerCase() !== hrEmail.toLowerCase()) {
+          console.log(`[RESEND SANDBOX] Forwarding copy to verified HR account (${hrEmail})`);
+          try {
+            await resend.emails.send({
+              from: fromAddress,
+              to: [hrEmail],
+              subject: `[FORWARDED - Resend Sandbox] ${subject}`,
+              html: `
+                <div style="background: #fef3c7; border: 1px solid #f59e0b; padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-family: sans-serif; font-size: 13px; color: #92400e; line-height: 1.5;">
+                  <strong>Resend Sandbox Testing Notice:</strong><br/>
+                  This email was generated for candidate <strong>${to}</strong>. Because the domain <code>vamtech.in</code> has not yet been verified at <a href="https://resend.com/domains" style="color:#b45309;font-weight:bold;">resend.com/domains</a>, Resend sandbox only permits delivery to the account owner (<strong>${hrEmail}</strong>).<br/>
+                  A copy has been forwarded here for your records.
+                </div>
+                ${html}
+              `,
+            });
+          } catch (fwdErr) {
+            console.error('[RESEND FORWARD ERROR]', fwdErr);
+          }
+        }
+
+        return {
+          success: false,
+          id: emailItem.id,
+          error: response.error.message,
+          isSandboxRestriction: isSandbox,
+        };
+      }
+
       return { success: true, id: response.data?.id };
-    } catch (err) {
-      console.error('[EMAIL ERROR]', err);
+    } catch (err: any) {
+      console.error('[EMAIL EXCEPTION]', err);
+      return { success: false, id: emailItem.id, error: err.message };
     }
   }
 
