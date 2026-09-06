@@ -157,9 +157,10 @@ export async function POST(request: Request) {
       stipendOrCtc = `Rs. ${(offerDetails.annualCtc || 1200000).toLocaleString('en-IN')} / annum (CTC)`;
     }
 
-    // Send email with PDF offer letter attached
+    // Send email with PDF offer letter attached directly to candidate email
+    const candidateEmail = candidate.email.trim();
     const emailResult = await sendOfferLetterEmail({
-      email: candidate.email,
+      email: candidateEmail,
       name: candidate.name,
       offerRefNumber,
       offerType: type,
@@ -170,17 +171,21 @@ export async function POST(request: Request) {
       downloadUrl,
     });
 
-    let message = `Offer letter ${offerRefNumber} generated successfully! Candidate status updated to Offer Sent.`;
+    let message = `Offer letter ${offerRefNumber} generated successfully!`;
     if (emailResult.success) {
-      message += ` Email notification delivered to ${candidate.email}.`;
+      message += ` Official signed PDF Offer Letter has been delivered directly to candidate's email (${candidateEmail}).`;
     } else if (emailResult.isSandboxRestriction) {
-      message += ` (Email Notice: Resend is in testing mode; candidate emails require domain verification at resend.com/domains. A copy was forwarded to ${process.env.HR_EMAIL || 'contactvamtech@gmail.com'}).`;
+      message += ` (Email Notice: Cloud email is in test mode; please add SMTP_PASS in Vercel to send directly to ${candidateEmail}. A copy was forwarded to ${process.env.HR_EMAIL || 'contactvamtech@gmail.com'}).`;
+    } else {
+      message += ` (Email Notice: Could not deliver to ${candidateEmail}: ${emailResult.error || 'Check SMTP configuration'}).`;
     }
 
     return NextResponse.json({
       success: true,
       offerRefNumber,
       offerRecord,
+      emailSent: emailResult.success,
+      emailError: emailResult.error,
       message,
     });
   } catch (error: any) {
