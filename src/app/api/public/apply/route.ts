@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     // 1. Send confirmation email to candidate
     await sendApplicationConfirmationEmail(candidate.email, candidate.name, candidate.refNumber, candidate.roleApplied);
 
-    // 2. Send instant hiring notification email directly to HR inbox (admin@vamtech.in)
+    // 2. Send instant hiring notification email directly to HR inbox (contactvamtech@gmail.com)
     await sendHiringNotificationToHR({
       refNumber: candidate.refNumber,
       name: candidate.name,

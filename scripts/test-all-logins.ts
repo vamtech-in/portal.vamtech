@@ -3,7 +3,8 @@ import http from 'http';
 const testCases = [
   { identifier: 'VT-HR-ADMIN', password: 'Admin@123', label: 'Admin Ref ID (VT-HR-ADMIN)' },
   { identifier: 'VT - HR - ADMIN', password: 'Admin@123', label: 'Admin Ref ID with spaces (VT - HR - ADMIN)' },
-  { identifier: 'admin@vamtech.in', password: 'Admin@123', label: 'Admin Email (admin@vamtech.in)' },
+  { identifier: 'contactvamtech@gmail.com', password: 'Admin@123', label: 'Admin Email (contactvamtech@gmail.com)' },
+  { identifier: 'admin@vamtech.in', password: 'Admin@123', label: 'Admin Legacy Email (admin@vamtech.in)' },
   { identifier: 'VT-2026-001', password: 'Emp@123', label: 'Employee Ref ID (VT-2026-001)' },
   { identifier: 'employee@vamtech.in', password: 'Emp@123', label: 'Employee Email (employee@vamtech.in)' },
   { identifier: 'VT-INT-2026-001', password: 'Intern@123', label: 'Paid Intern ID (VT-INT-2026-001)' },

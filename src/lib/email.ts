@@ -65,7 +65,7 @@ export async function sendEmail({
     try {
       console.log(`[GMAIL SMTP] Dispatching directly from ${smtpConfig.user} to ${to}`);
       const info = await smtpConfig.transporter.sendMail({
-        from: `"VAMTech" <${smtpConfig.user}>`,
+        from: `"VAMTech HR" <${smtpConfig.user}>`,
         to,
         replyTo: smtpConfig.user,
         subject,

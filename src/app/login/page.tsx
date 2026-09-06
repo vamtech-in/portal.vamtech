@@ -128,7 +128,7 @@ export default function LoginPage() {
             <div className="pt-4 border-t border-slate-100 text-center">
               <span className="text-[11px] text-slate-500 block mb-1">Need access or assistance?</span>
               <span className="text-[10px] text-slate-600 block font-medium">
-                Contact HR Admin at <strong className="text-[#0f172a] font-mono">admin@vamtech.in</strong>
+                Contact HR Admin at <strong className="text-[#0f172a] font-mono">contactvamtech@gmail.com</strong>
               </span>
             </div>
           </div>

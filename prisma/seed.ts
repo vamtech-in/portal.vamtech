@@ -15,29 +15,43 @@ async function main() {
   const tempPasswordHash = await bcrypt.hash('Temp@123', 10);
   const internPasswordHash = await bcrypt.hash('Intern@123', 10);
 
-  // 1. Admin User
-  const admin = await prisma.user.upsert({
-    where: { email: 'admin@vamtech.in' },
-    update: {
-      refNumber: 'VT-HR-ADMIN',
-      passwordHash: adminPasswordHash,
-      role: 'admin',
-    },
-    create: {
-      email: 'admin@vamtech.in',
-      name: 'VAMTech HR Admin',
-      passwordHash: adminPasswordHash,
-      role: 'admin',
-      refNumber: 'VT-HR-ADMIN',
-      mustResetPassword: false,
-      department: 'Human Resources',
-      designation: 'HR Director',
-      joiningDate: '2024-01-15',
-      phone: '+91 98765 43210',
-      emergencyContact: 'Emergency Admin - +91 98765 00000',
+  // 1. Admin User (contactvamtech@gmail.com)
+  const existingAdmin = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: 'contactvamtech@gmail.com' },
+        { email: 'admin@vamtech.in' },
+        { refNumber: 'VT-HR-ADMIN' },
+      ],
     },
   });
-  console.log('👤 Admin user created:', admin.email);
+
+  const admin = existingAdmin
+    ? await prisma.user.update({
+        where: { id: existingAdmin.id },
+        data: {
+          email: 'contactvamtech@gmail.com',
+          refNumber: 'VT-HR-ADMIN',
+          passwordHash: adminPasswordHash,
+          role: 'admin',
+        },
+      })
+    : await prisma.user.create({
+        data: {
+          email: 'contactvamtech@gmail.com',
+          name: 'VAMTech HR Admin',
+          passwordHash: adminPasswordHash,
+          role: 'admin',
+          refNumber: 'VT-HR-ADMIN',
+          mustResetPassword: false,
+          department: 'Human Resources',
+          designation: 'HR Director',
+          joiningDate: '2024-01-15',
+          phone: '+91 72379 00686',
+          emergencyContact: 'Emergency Admin - +91 72379 00686',
+        },
+      });
+  console.log('👤 Admin user configured:', admin.email);
 
   // 2. Existing Employee User
   const employee1 = await prisma.user.upsert({
