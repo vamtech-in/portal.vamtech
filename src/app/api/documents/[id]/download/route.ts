@@ -56,7 +56,23 @@ export async function GET(
       );
     }
 
-    // Attempt to read physical file from disk if fileUrl exists
+    // 1. If stored as Base64 Data URL (Cloud / Serverless upload)
+    if (doc.fileUrl && doc.fileUrl.startsWith('data:')) {
+      const matches = doc.fileUrl.match(/^data:([^;]+);base64,(.+)$/);
+      if (matches) {
+        const mimeType = matches[1];
+        const fileBuffer = Buffer.from(matches[2], 'base64');
+        return new NextResponse(new Uint8Array(fileBuffer), {
+          headers: {
+            'Content-Type': mimeType,
+            'Content-Disposition': `inline; filename="${encodeURIComponent(doc.title || 'document')}"`,
+            'X-Robots-Tag': 'noindex, nofollow, noarchive',
+          },
+        });
+      }
+    }
+
+    // 2. Attempt to read physical file from disk if fileUrl exists
     if (doc.fileUrl) {
       let localDiskPath = '';
       if (doc.fileUrl.startsWith('/uploads/')) {

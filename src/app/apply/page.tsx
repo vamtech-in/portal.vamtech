@@ -250,7 +250,7 @@ export default function ApplyPage() {
                         {formData.resumeUrl ? (resumeFileName || 'Resume Attached') : 'Upload Resume File'}
                       </span>
                       <span className="text-[10px] text-slate-500">
-                        {formData.resumeUrl ? `${resumeFileSize || 'Uploaded'} • Ready for submission` : 'PDF or DOC up to 25MB'}
+                        {formData.resumeUrl ? `${resumeFileSize || 'Uploaded'} • Ready for submission` : 'PDF or DOC up to 5MB'}
                       </span>
                     </div>
                   </div>
