@@ -86,7 +86,7 @@ export default function LoginPage() {
                     placeholder="e.g. VT-INT-2026-001, VT-2026-001, or email"
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
-                    className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl uppercase placeholder:normal-case font-mono placeholder:font-sans"
+                    className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl placeholder:normal-case font-mono placeholder:font-sans"
                   />
                 </div>
                 <p className="text-[10px] text-slate-400 mt-1">

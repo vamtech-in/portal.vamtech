@@ -50,7 +50,7 @@ export async function createSession(user: UserSession) {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: process.env.NODE_ENV === 'production' && process.env.VERCEL === '1',
     expires: expiresAt,
     sameSite: 'lax',
     path: '/',

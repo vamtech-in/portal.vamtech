@@ -88,17 +88,30 @@ export function generateOfferLetterPDFBuffer(
         doc.moveDown(0.5);
       };
 
-      // Helper function to draw watermark
+      // Helper function to draw watermark using official company logo
       const drawWatermark = () => {
-        doc.save();
-        doc.fontSize(90).font('Helvetica-Bold').fillColor('#cbd5e1').fillOpacity(0.12);
-        doc.rotate(-32, { origin: [doc.page.width / 2, doc.page.height / 2] });
-        doc.text('VMTech', (doc.page.width - 320) / 2, doc.page.height / 2 - 45, {
-          width: 320,
-          align: 'center',
-          lineBreak: false,
-        });
-        doc.restore();
+        if (fs.existsSync(logoPath)) {
+          doc.save();
+          doc.opacity(0.08); // Subtle watermark opacity
+          const watermarkWidth = 420;
+          const watermarkHeight = watermarkWidth / 4.164;
+          const x = (doc.page.width - watermarkWidth) / 2;
+          const y = (doc.page.height - watermarkHeight) / 2;
+
+          doc.rotate(-28, { origin: [doc.page.width / 2, doc.page.height / 2] });
+          doc.image(logoPath, x, y, { width: watermarkWidth });
+          doc.restore();
+        } else {
+          doc.save();
+          doc.fontSize(80).font('Helvetica-Bold').fillColor('#cbd5e1').fillOpacity(0.08);
+          doc.rotate(-28, { origin: [doc.page.width / 2, doc.page.height / 2] });
+          doc.text('VAMTech', (doc.page.width - 320) / 2, doc.page.height / 2 - 40, {
+            width: 320,
+            align: 'center',
+            lineBreak: false,
+          });
+          doc.restore();
+        }
       };
 
       // Helper to draw clean bullet point

@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Users, Search, Filter, FileText, Send, UserCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Users, Search, Filter, FileText, Send, UserCheck, CheckCircle2, ArrowRight, UserPlus, Plus, X, AlertCircle, Sparkles } from 'lucide-react';
 
 export default function CandidatePipelinePage() {
   const [candidates, setCandidates] = useState<any[]>([]);
@@ -17,6 +17,88 @@ export default function CandidatePipelinePage() {
   const [onboardDesignation, setOnboardDesignation] = useState('');
   const [onboarding, setOnboarding] = useState(false);
   const [onboardMsg, setOnboardMsg] = useState('');
+
+  // Add External Candidate Modal state
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [addingCandidate, setAddingCandidate] = useState(false);
+  const [addError, setAddError] = useState('');
+  const [createdCandidate, setCreatedCandidate] = useState<any | null>(null);
+  const [newCandidate, setNewCandidate] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    roleApplied: 'Senior Full Stack Engineer',
+    customRole: '',
+    status: 'Selected',
+    linkedin: '',
+    resumeUrl: '',
+    coverNote: '',
+    sendSelectionEmail: false,
+  });
+
+  const resetAddModal = () => {
+    setShowAddModal(false);
+    setCreatedCandidate(null);
+    setAddError('');
+    setNewCandidate({
+      name: '',
+      email: '',
+      phone: '',
+      roleApplied: 'Senior Full Stack Engineer',
+      customRole: '',
+      status: 'Selected',
+      linkedin: '',
+      resumeUrl: '',
+      coverNote: '',
+      sendSelectionEmail: false,
+    });
+  };
+
+  const handleAddCandidateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setAddingCandidate(true);
+    setAddError('');
+
+    const resolvedRole = newCandidate.roleApplied === 'Other'
+      ? newCandidate.customRole.trim()
+      : newCandidate.roleApplied.trim();
+
+    if (!resolvedRole) {
+      setAddError('Please specify the candidate role or job title.');
+      setAddingCandidate(false);
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/hr/candidates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newCandidate.name,
+          email: newCandidate.email,
+          phone: newCandidate.phone,
+          roleApplied: resolvedRole,
+          status: newCandidate.status,
+          linkedin: newCandidate.linkedin,
+          resumeUrl: newCandidate.resumeUrl,
+          coverNote: newCandidate.coverNote || 'Direct candidate selected via external interview & skill assessment.',
+          sendSelectionEmail: newCandidate.sendSelectionEmail,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to register external candidate.');
+      }
+
+      setCreatedCandidate(data.candidate);
+      fetchCandidates();
+    } catch (err: any) {
+      setAddError(err.message || 'Failed to register external candidate.');
+    } finally {
+      setAddingCandidate(false);
+    }
+  };
 
   const fetchCandidates = async () => {
     try {
@@ -99,6 +181,19 @@ export default function CandidatePipelinePage() {
           </h1>
           <p className="text-xs text-slate-500 mt-1">Manage applicants, track reference numbers, issue offer letters, and onboard hires.</p>
         </div>
+
+        <button
+          type="button"
+          onClick={() => {
+            setCreatedCandidate(null);
+            setAddError('');
+            setShowAddModal(true);
+          }}
+          className="btn-orange text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center gap-2 shadow-sm hover:shadow transition self-start sm:self-auto cursor-pointer"
+        >
+          <UserPlus className="w-4 h-4" />
+          <span>Add External Candidate</span>
+        </button>
       </div>
 
       {/* Filter Bar */}
@@ -348,6 +443,308 @@ export default function CandidatePipelinePage() {
                     className="btn-orange text-white font-bold px-4 py-2 rounded-xl"
                   >
                     {onboarding ? 'Onboarding...' : 'Confirm Onboarding & Email Credentials'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Add External Candidate Modal */}
+      {showAddModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 overflow-y-auto">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-xl p-6 space-y-4 shadow-2xl my-8">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-orange-50 border border-orange-200 flex items-center justify-center text-vamorange-500">
+                  <UserPlus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-display text-lg font-bold text-[#0f172a]">
+                    Register External / Direct Candidate
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    Add candidates evaluated outside the portal. Official Ref will be auto-generated.
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={resetAddModal}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100 transition"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {createdCandidate ? (
+              <div className="space-y-5 py-4 text-center">
+                <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center mx-auto text-emerald-600">
+                  <CheckCircle2 className="w-8 h-8" />
+                </div>
+
+                <div className="space-y-1.5">
+                  <h4 className="font-display text-base font-bold text-[#0f172a]">
+                    Candidate Successfully Registered!
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Candidate profile created and added to your recruitment pipeline.
+                  </p>
+                </div>
+
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-xs text-left space-y-2 max-w-md mx-auto">
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Reference Number:</span>
+                    <span className="font-mono font-bold text-vamorange-500 bg-white px-2 py-0.5 rounded border border-orange-200">
+                      {createdCandidate.refNumber}
+                    </span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Full Name:</span>
+                    <span className="font-bold text-slate-800">{createdCandidate.name}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Email:</span>
+                    <span className="font-mono text-slate-700">{createdCandidate.email}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Role:</span>
+                    <span className="font-semibold text-slate-800">{createdCandidate.roleApplied}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-slate-500">Current Status:</span>
+                    <span className="px-2 py-0.5 text-[11px] font-bold rounded-md bg-amber-50 text-amber-700 border border-amber-200">
+                      {createdCandidate.status}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                  <Link
+                    href={`/hr/offer-letter/${createdCandidate.id}`}
+                    className="w-full sm:w-auto btn-orange text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow transition"
+                  >
+                    <Send className="w-4 h-4" />
+                    <span>Generate & Send Offer Letter Now</span>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setCreatedCandidate(null);
+                      setNewCandidate({
+                        name: '',
+                        email: '',
+                        phone: '',
+                        roleApplied: 'Senior Full Stack Engineer',
+                        customRole: '',
+                        status: 'Selected',
+                        linkedin: '',
+                        resumeUrl: '',
+                        coverNote: '',
+                        sendSelectionEmail: false,
+                      });
+                    }}
+                    className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2.5 rounded-xl text-xs transition"
+                  >
+                    Add Another
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={resetAddModal}
+                    className="w-full sm:w-auto bg-white hover:bg-slate-50 border border-slate-200 text-slate-600 font-semibold px-4 py-2.5 rounded-xl text-xs transition"
+                  >
+                    Done / Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleAddCandidateSubmit} className="space-y-4 text-xs">
+                {addError && (
+                  <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl text-xs flex items-center gap-2 font-medium">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                    <span>{addError}</span>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div className="sm:col-span-2">
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Full Name <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Jane Doe"
+                      value={newCandidate.name}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, name: e.target.value })}
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Email Address <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      placeholder="candidate@example.com"
+                      value={newCandidate.email}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, email: e.target.value })}
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Phone Number <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="+91 9876543210"
+                      value={newCandidate.phone}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, phone: e.target.value })}
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Role / Position <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={newCandidate.roleApplied}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, roleApplied: e.target.value })}
+                      className="w-full glass-input px-3 py-2.5 rounded-xl bg-white"
+                    >
+                      <optgroup label="Full-Time Roles">
+                        <option value="Senior Full Stack Engineer">Senior Full Stack Engineer</option>
+                        <option value="Frontend Developer">Frontend Developer</option>
+                        <option value="Full Stack Developer">Full Stack Developer</option>
+                        <option value="Backend Engineer">Backend Engineer</option>
+                        <option value="AI / Machine Learning Engineer">AI / Machine Learning Engineer</option>
+                        <option value="UI/UX Designer">UI/UX Designer</option>
+                        <option value="DevOps Specialist">DevOps Specialist</option>
+                      </optgroup>
+                      <optgroup label="Internships">
+                        <option value="Frontend Web Development Intern">Frontend Web Development Intern</option>
+                        <option value="Backend Development Intern">Backend Development Intern</option>
+                        <option value="Full Stack Intern">Full Stack Intern</option>
+                        <option value="UI/UX Design Intern">UI/UX Design Intern</option>
+                      </optgroup>
+                      <option value="Other">Other (Custom Role / Title)</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Initial Status <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={newCandidate.status}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, status: e.target.value })}
+                      className="w-full glass-input px-3 py-2.5 rounded-xl bg-white font-medium"
+                    >
+                      <option value="Selected">Selected (Ready for Offer Letter)</option>
+                      <option value="Interviewed">Interviewed</option>
+                      <option value="Applied">Applied</option>
+                    </select>
+                  </div>
+                </div>
+
+                {newCandidate.roleApplied === 'Other' && (
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Specify Custom Role Title <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Mobile App Engineer or Data Analyst"
+                      value={newCandidate.customRole}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, customRole: e.target.value })}
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                    />
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Tip: Including &ldquo;Intern&rdquo; in the title automatically generates an internship reference number (VT-INT-YYYY-XXX).
+                    </p>
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      LinkedIn / Portfolio URL <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://linkedin.com/in/..."
+                      value={newCandidate.linkedin}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, linkedin: e.target.value })}
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Resume Link / File URL <span className="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="https://... or Drive link"
+                      value={newCandidate.resumeUrl}
+                      onChange={(e) => setNewCandidate({ ...newCandidate, resumeUrl: e.target.value })}
+                      className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-slate-700 font-semibold mb-1">
+                    Evaluation Notes / Context <span className="text-slate-400 font-normal">(Optional)</span>
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="e.g. Direct selection from technical round, off-campus drive, high performance on coding challenge..."
+                    value={newCandidate.coverNote}
+                    onChange={(e) => setNewCandidate({ ...newCandidate, coverNote: e.target.value })}
+                    className="w-full glass-input px-3.5 py-2 rounded-xl resize-none"
+                  />
+                </div>
+
+                <div className="flex items-center gap-2 pt-1">
+                  <input
+                    type="checkbox"
+                    id="sendSelectionEmail"
+                    checked={newCandidate.sendSelectionEmail}
+                    onChange={(e) => setNewCandidate({ ...newCandidate, sendSelectionEmail: e.target.checked })}
+                    className="w-4 h-4 rounded text-vamorange-500 focus:ring-vamorange-500 border-slate-300 cursor-pointer"
+                  />
+                  <label htmlFor="sendSelectionEmail" className="text-slate-600 text-[11px] cursor-pointer">
+                    Also send candidate an immediate &ldquo;Selection Notification&rdquo; email
+                  </label>
+                </div>
+
+                <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={resetAddModal}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold px-4 py-2 rounded-xl transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={addingCandidate}
+                    className="btn-orange text-white font-bold px-5 py-2 rounded-xl shadow transition cursor-pointer disabled:opacity-50"
+                  >
+                    {addingCandidate ? 'Registering...' : 'Register Candidate'}
                   </button>
                 </div>
               </form>
