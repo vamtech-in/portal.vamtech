@@ -56,12 +56,16 @@ export async function POST(request: Request) {
       year: 'numeric',
     });
 
+    const cleanDesignation = ((designation || candidate.roleApplied || '') as string)
+      .replace(/\s*\((paid|unpaid)\)\s*$/gi, '')
+      .trim();
+
     const offerDetails = {
       candidateName: candidate.name,
       candidateAddress: candidateAddress || 'Lucknow, Uttar Pradesh, 226028',
       candidateEmail: candidate.email,
       candidatePhone: candidate.phone,
-      designation: designation || candidate.roleApplied,
+      designation: cleanDesignation || designation || candidate.roleApplied,
       department: department || 'Engineering',
       offerRefNumber,
       date: currentDate,

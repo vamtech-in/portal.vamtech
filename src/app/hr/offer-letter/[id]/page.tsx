@@ -47,10 +47,13 @@ export default function OfferLetterGeneratorPage({ params }: { params: Promise<{
           if (data.candidates && data.candidates.length > 0) {
             const cand = data.candidates.find((c: any) => c.id === candidateId || c.refNumber === candidateId) || data.candidates[0];
             setCandidate(cand);
-            setDesignation(cand.roleApplied);
+            const cleanRole = (cand.roleApplied || '').replace(/\s*\((paid|unpaid)\)\s*$/gi, '').trim();
+            setDesignation(cleanRole || cand.roleApplied);
 
             // Auto-select template based on role or intern reference
-            if (cand.refNumber?.includes('INT') || cand.roleApplied?.toLowerCase().includes('intern')) {
+            if (cand.roleApplied?.toLowerCase().includes('(unpaid)') || cand.roleApplied?.toLowerCase().includes('unpaid intern')) {
+              setOfferType('UNPAID_INTERNSHIP');
+            } else if (cand.refNumber?.includes('INT') || cand.roleApplied?.toLowerCase().includes('intern')) {
               setOfferType('PAID_INTERNSHIP');
             } else {
               setOfferType('FULL_TIME');

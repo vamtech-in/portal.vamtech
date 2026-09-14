@@ -127,6 +127,11 @@ export function generateOfferLetterPDFBuffer(
       const isPaid = type === 'PAID_INTERNSHIP';
       const firstName = details.candidateName ? details.candidateName.split(' ')[0] : 'Candidate';
 
+      // Clean designation to strip any redundant trailing (Paid) or (Unpaid)
+      const cleanDesignation = (details.designation || '')
+        .replace(/\s*\((paid|unpaid)\)\s*$/gi, '')
+        .trim() || details.designation;
+
       // ================= PAGE 1 =================
       drawWatermark();
       drawHeader();
@@ -159,8 +164,8 @@ export function generateOfferLetterPDFBuffer(
 
       // Subject line (Centered, Bold, Underlined)
       const subjectText = isInternship
-        ? `Subject: Offer of Internship — ${details.designation} (${isPaid ? 'Paid' : 'Unpaid'})`
-        : `Subject: Offer of Employment — ${details.designation}`;
+        ? `Subject: Offer of Internship — ${cleanDesignation} (${isPaid ? 'Paid' : 'Unpaid'})`
+        : `Subject: Offer of Employment — ${cleanDesignation}`;
 
       doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#000000')
          .text(subjectText, 45, doc.y, { align: 'center', underline: true, width: doc.page.width - 90 });
@@ -173,8 +178,8 @@ export function generateOfferLetterPDFBuffer(
 
       // Opening paragraphs
       const openingP1 = isInternship
-        ? `We are pleased to offer you the position of ${details.designation} at VAMTech Pvt Ltd, based on your application and the subsequent interview(s) held with our team. We were impressed with your skills and enthusiasm, and we believe you will be a valuable addition to our team.`
-        : `We are pleased to offer you the position of ${details.designation} at VAMTech Pvt Ltd, based on your application and the subsequent interview(s) held with our team. We believe your experience and capabilities will significantly contribute to our growth and innovation.`;
+        ? `We are pleased to offer you the position of ${cleanDesignation} at VAMTech Pvt Ltd, based on your application and the subsequent interview(s) held with our team. We were impressed with your skills and enthusiasm, and we believe you will be a valuable addition to our team.`
+        : `We are pleased to offer you the position of ${cleanDesignation} at VAMTech Pvt Ltd, based on your application and the subsequent interview(s) held with our team. We believe your experience and capabilities will significantly contribute to our growth and innovation.`;
 
       doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.2)
          .text(openingP1, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
@@ -192,7 +197,7 @@ export function generateOfferLetterPDFBuffer(
         // Section 1: Position and Role
         doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('1. Position and Role');
         doc.moveDown(0.2);
-        drawBulletItem(`Designation: ${details.designation}`);
+        drawBulletItem(`Designation: ${cleanDesignation}`);
         drawBulletItem(`Department: ${details.department || 'Engineering'}`);
         drawBulletItem(`Reporting Manager: ${details.reportingManager || 'Aditya Gupta, HR'}`);
         drawBulletItem(`Work Location: ${details.workLocation || 'Remote'}`);
@@ -245,7 +250,7 @@ export function generateOfferLetterPDFBuffer(
         // Full Time Page 1
         doc.fontSize(9).font('Helvetica-Bold').fillColor('#111827').text('1. Position and Role');
         doc.moveDown(0.2);
-        drawBulletItem(`Designation: ${details.designation}`);
+        drawBulletItem(`Designation: ${cleanDesignation}`);
         drawBulletItem(`Department: ${details.department || 'Engineering'}`);
         drawBulletItem(`Reporting Manager: ${details.reportingManager || 'Aditya Gupta, HR'}`);
         drawBulletItem(`Work Location: ${details.workLocation || 'Remote'}`);
@@ -339,7 +344,7 @@ export function generateOfferLetterPDFBuffer(
         doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('Acceptance');
         doc.moveDown(0.3);
         doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
-           .text(`I, ${details.candidateName}, accept the offer of internship as ${details.designation} at VAMTech Pvt Ltd on the terms and conditions mentioned above.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+           .text(`I, ${details.candidateName}, accept the offer of internship as ${cleanDesignation} at VAMTech Pvt Ltd on the terms and conditions mentioned above.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
         doc.moveDown(2.5);
 
         // Candidate Signature Line
@@ -362,10 +367,10 @@ export function generateOfferLetterPDFBuffer(
         doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('9. Notice Period and Termination');
         const noticePeriod = details.noticePeriod || '60 Days';
         doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
-           .text(`Following probation confirmation, either party may terminate employment by giving ${noticePeriod} written notice or gross salary in lieu thereof. The company reserves the right to terminate employment immediately without notice in cases of gross misconduct or breach of confidentiality.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+           .text(`Either party may terminate this employment contract by serving a written notice of ${noticePeriod} or payment of gross salary in lieu thereof, subject to handover completion. The company reserves the right to terminate employment immediately for cause or misconduct.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
         doc.moveDown(0.6);
 
-        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('10. Documentation and Relieving');
+        doc.fontSize(9.5).font('Helvetica-Bold').fillColor('#111827').text('10. Relieving and Experience Certification');
         doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
            .text(`Upon successful completion of tenure, satisfactory handover of assets, and settlement of obligations, you will be issued a formal Service Relieving Certificate and Work Experience Letter.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
         doc.moveDown(0.7);
@@ -396,7 +401,7 @@ export function generateOfferLetterPDFBuffer(
         doc.fontSize(10).font('Helvetica-Bold').fillColor('#111827').text('Acceptance');
         doc.moveDown(0.3);
         doc.fontSize(9).font('Helvetica').fillColor('#111827').lineGap(1.3)
-           .text(`I, ${details.candidateName}, accept the offer of employment as ${details.designation} at VAMTech Pvt Ltd on the terms and conditions mentioned above.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+           .text(`I, ${details.candidateName}, accept the offer of employment as ${cleanDesignation} at VAMTech Pvt Ltd on the terms and conditions mentioned above.`, 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
         doc.moveDown(2.5);
 
         // Candidate Signature Line
