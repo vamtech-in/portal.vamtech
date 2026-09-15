@@ -60,7 +60,7 @@ export default function LoginPage() {
               <div className="pt-2">
                 <h1 className="font-display text-2xl font-black text-[#0f172a]">Staff Portal Login</h1>
                 <p className="text-xs text-slate-500 mt-1">
-                  Authorized access for employees and HR administrators on <span className="font-mono text-slate-700">portal.vamtech.in</span>
+                  Authorized access for employees and HR administrators on <span className="font-mono text-slate-700">career.vamtech.in</span>
                 </p>
               </div>
             </div>

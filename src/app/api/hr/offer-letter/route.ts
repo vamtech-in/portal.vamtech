@@ -162,7 +162,7 @@ export async function POST(request: Request) {
     });
 
     // Generate secure download URL for the candidate
-    const baseUrl = process.env.NEXTAUTH_URL || 'https://portal.vamtech.in';
+    const baseUrl = process.env.NEXTAUTH_URL || 'https://career.vamtech.in';
     const downloadUrl = `${baseUrl}/api/documents/offer-letter/${offerRecord.id}`;
 
     // Format compensation or stipend string for email summary

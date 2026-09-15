@@ -15,7 +15,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: 'VAMTech Internal Portal | portal.vamtech.in',
+  title: 'VAMTech Internal Portal | career.vamtech.in',
   description: 'VAMTech Pvt Ltd Internal Application, Candidate Pipeline & Employee Service Portal',
   robots: {
     index: false,

@@ -171,7 +171,7 @@ export async function sendApplicationConfirmationEmail(email: string, name: stri
         You can track your application status at any time on our portal:
       </p>
       <p style="text-align: center; margin: 25px 0;">
-        <a href="https://portal.vamtech.in/status?ref=${refNumber}&email=${encodeURIComponent(email)}" 
+        <a href="https://career.vamtech.in/status?ref=${refNumber}&email=${encodeURIComponent(email)}" 
            style="background: #f9572a; color: #ffffff; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block;">
           Check Application Status
         </a>
@@ -265,7 +265,7 @@ export async function sendHiringNotificationToHR({
       }
 
       <div style="text-align: center; margin: 25px 0 10px 0;">
-        <a href="https://portal.vamtech.in/hr" 
+        <a href="https://career.vamtech.in/hr" 
            style="background: #0f172a; color: #ffffff; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block; font-size: 13px;">
           Review Candidate on HR Portal →
         </a>
@@ -389,7 +389,7 @@ export async function sendOfferLetterEmail({
         <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid #f1f5f9;">
           <p style="margin: 0; font-size: 13.5px; color: #334155;">Warm regards,</p>
           <p style="margin: 4px 0 0 0; font-size: 14px; font-weight: 700; color: #0f172a;">HR & Talent Acquisition Team</p>
-          <p style="margin: 2px 0 0 0; font-size: 12.5px; color: #64748b;">VAMTech Pvt Ltd &bull; portal.vamtech.in</p>
+          <p style="margin: 2px 0 0 0; font-size: 12.5px; color: #64748b;">VAMTech Pvt Ltd &bull; career.vamtech.in</p>
           <p style="margin: 2px 0 0 0; font-size: 12px; color: #94a3b8;">Tiwariganj, Lucknow, Uttar Pradesh 226028 | contactvamtech@gmail.com</p>
         </div>
       </div>
@@ -453,7 +453,7 @@ export async function sendOnboardingCredentialsEmail({
         You will be required to change your temporary password immediately upon your first login.
       </p>
       <p style="text-align: center; margin: 25px 0;">
-        <a href="https://portal.vamtech.in/login" 
+        <a href="https://career.vamtech.in/login" 
            style="background: #f9572a; color: #ffffff; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block;">
           Log In to VAMTech Portal
         </a>
@@ -495,7 +495,7 @@ export async function sendLeaveStatusEmail({
       <p>Dear ${name},</p>
       <p>Your request for <strong>${leaveType} Leave</strong> from <strong>${startDate}</strong> to <strong>${endDate}</strong> has been <span style="color: ${statusColor}; font-weight: bold;">${status}</span>.</p>
       ${comment ? `<p style="background: #f8fafc; padding: 12px; border-radius: 6px; font-style: italic; color: #475569;">Reviewer comment: "${comment}"</p>` : ''}
-      <p style="margin-top: 20px; font-size: 13px; color: #64748b;">Log into <a href="https://portal.vamtech.in/dashboard/attendance" style="color: #f9572a;">portal.vamtech.in</a> to view your updated leave balance.</p>
+      <p style="margin-top: 20px; font-size: 13px; color: #64748b;">Log into <a href="https://career.vamtech.in/dashboard/attendance" style="color: #f9572a;">career.vamtech.in</a> to view your updated leave balance.</p>
     </div>
   `;
 
@@ -538,13 +538,13 @@ export async function sendCandidateSelectedEmail({
         Our HR team is preparing your official offer letter package. You will receive a separate notification with your offer letter and formal details very shortly.
       </p>
       <p style="text-align: center; margin: 25px 0;">
-        <a href="https://portal.vamtech.in/status?ref=${refNumber}&email=${encodeURIComponent(email)}" 
+        <a href="https://career.vamtech.in/status?ref=${refNumber}&email=${encodeURIComponent(email)}" 
            style="background: #f9572a; color: #ffffff; font-weight: bold; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block;">
           View Application Status
         </a>
       </p>
       <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 30px; font-size: 12px; color: #94a3b8; text-align: center;">
-        VAMTech Pvt Ltd Talent Acquisition Team &bull; portal.vamtech.in
+        VAMTech Pvt Ltd Talent Acquisition Team &bull; career.vamtech.in
       </div>
     </div>
   `;
@@ -587,7 +587,7 @@ export async function sendCandidateRejectedEmail({
         We sincerely appreciate your interest in VAMTech and encourage you to apply for future openings that match your experience. We wish you every success in your professional endeavors.
       </p>
       <div style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 30px; font-size: 12px; color: #94a3b8; text-align: center;">
-        VAMTech Pvt Ltd HR Team &bull; portal.vamtech.in
+        VAMTech Pvt Ltd HR Team &bull; career.vamtech.in
       </div>
     </div>
   `;

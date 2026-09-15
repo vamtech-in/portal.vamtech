@@ -519,12 +519,12 @@ export function generateVaultDocumentPDFBuffer(params: {
 
       doc.y = boxY + 90;
       doc.fontSize(10).font('Helvetica').fillColor('#64748b').lineGap(2)
-         .text('This official digital record was retrieved from the authenticated employee document repository on portal.vamtech.in. The digital record serves as certified verification of employment documentation issued by VAMTech Pvt Ltd.', 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
+         .text('This official digital record was retrieved from the authenticated employee document repository on career.vamtech.in. The digital record serves as certified verification of employment documentation issued by VAMTech Pvt Ltd.', 45, doc.y, { width: doc.page.width - 90, align: 'justify' });
 
       // Footer
       const bottomY = doc.page.height - 28;
       doc.fontSize(8).font('Helvetica').fillColor('#94a3b8')
-         .text('VAMTech Pvt Ltd • portal.vamtech.in • Private & Confidential', 45, bottomY, {
+         .text('VAMTech Pvt Ltd • career.vamtech.in • Private & Confidential', 45, bottomY, {
            width: doc.page.width - 90,
            align: 'center',
          });
