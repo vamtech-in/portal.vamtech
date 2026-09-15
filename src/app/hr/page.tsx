@@ -27,7 +27,7 @@ export default function CandidatePipelinePage() {
     name: '',
     email: '',
     phone: '',
-    roleApplied: 'Senior Full Stack Engineer',
+    roleApplied: 'Frontend Web Development Intern',
     customRole: '',
     status: 'Selected',
     linkedin: '',
@@ -35,16 +35,18 @@ export default function CandidatePipelinePage() {
     coverNote: '',
     sendSelectionEmail: false,
   });
+  const [candidateTrack, setCandidateTrack] = useState<'INTERN' | 'FULL_TIME'>('INTERN');
 
   const resetAddModal = () => {
     setShowAddModal(false);
     setCreatedCandidate(null);
     setAddError('');
+    setCandidateTrack('INTERN');
     setNewCandidate({
       name: '',
       email: '',
       phone: '',
-      roleApplied: 'Senior Full Stack Engineer',
+      roleApplied: 'Frontend Web Development Intern',
       customRole: '',
       status: 'Selected',
       linkedin: '',
@@ -59,7 +61,7 @@ export default function CandidatePipelinePage() {
     setAddingCandidate(true);
     setAddError('');
 
-    const resolvedRole = newCandidate.roleApplied === 'Other'
+    let resolvedRole = newCandidate.roleApplied === 'Other'
       ? newCandidate.customRole.trim()
       : newCandidate.roleApplied.trim();
 
@@ -67,6 +69,10 @@ export default function CandidatePipelinePage() {
       setAddError('Please specify the candidate role or job title.');
       setAddingCandidate(false);
       return;
+    }
+
+    if (candidateTrack === 'INTERN' && !resolvedRole.toLowerCase().includes('intern')) {
+      resolvedRole = `${resolvedRole} Intern`;
     }
 
     try {
@@ -613,7 +619,29 @@ export default function CandidatePipelinePage() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                  <div>
+                    <label className="block text-slate-700 font-semibold mb-1">
+                      Offer Track (Intern or Full Time) <span className="text-rose-500">*</span>
+                    </label>
+                    <select
+                      value={candidateTrack}
+                      onChange={(e) => {
+                        const track = e.target.value as 'INTERN' | 'FULL_TIME';
+                        setCandidateTrack(track);
+                        if (track === 'INTERN') {
+                          setNewCandidate((prev) => ({ ...prev, roleApplied: 'Frontend Web Development Intern' }));
+                        } else {
+                          setNewCandidate((prev) => ({ ...prev, roleApplied: 'Frontend Developer' }));
+                        }
+                      }}
+                      className="w-full glass-input px-3 py-2.5 rounded-xl bg-white font-bold text-slate-800 border-orange-200 focus:border-vamorange-500"
+                    >
+                      <option value="INTERN">🎓 Intern (Internship Offer)</option>
+                      <option value="FULL_TIME">💼 Full Time (Employment Offer)</option>
+                    </select>
+                  </div>
+
                   <div>
                     <label className="block text-slate-700 font-semibold mb-1">
                       Role / Position <span className="text-rose-500">*</span>
@@ -621,23 +649,33 @@ export default function CandidatePipelinePage() {
                     <select
                       value={newCandidate.roleApplied}
                       onChange={(e) => setNewCandidate({ ...newCandidate, roleApplied: e.target.value })}
-                      className="w-full glass-input px-3 py-2.5 rounded-xl bg-white"
+                      className="w-full glass-input px-3 py-2.5 rounded-xl bg-white font-medium"
                     >
-                      <optgroup label="Full-Time Roles">
-                        <option value="Senior Full Stack Engineer">Senior Full Stack Engineer</option>
-                        <option value="Frontend Developer">Frontend Developer</option>
-                        <option value="Full Stack Developer">Full Stack Developer</option>
-                        <option value="Backend Engineer">Backend Engineer</option>
-                        <option value="AI / Machine Learning Engineer">AI / Machine Learning Engineer</option>
-                        <option value="UI/UX Designer">UI/UX Designer</option>
-                        <option value="DevOps Specialist">DevOps Specialist</option>
-                      </optgroup>
-                      <optgroup label="Internships">
-                        <option value="Frontend Web Development Intern">Frontend Web Development Intern</option>
-                        <option value="Backend Development Intern">Backend Development Intern</option>
-                        <option value="Full Stack Intern">Full Stack Intern</option>
-                        <option value="UI/UX Design Intern">UI/UX Design Intern</option>
-                      </optgroup>
+                      {candidateTrack === 'INTERN' ? (
+                        <>
+                          <option value="Frontend Web Development Intern">Frontend Web Development Intern</option>
+                          <option value="Backend Development Intern">Backend Development Intern</option>
+                          <option value="Full Stack Intern">Full Stack Intern</option>
+                          <option value="UI/UX Design Intern">UI/UX Design Intern</option>
+                          <option value="AI / Machine Learning Intern">AI / Machine Learning Intern</option>
+                          <option value="Mobile App Development Intern">Mobile App Development Intern</option>
+                          <option value="Digital Marketing Intern">Digital Marketing Intern</option>
+                          <option value="Human Resources (HR) Intern">Human Resources (HR) Intern</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value="Senior Full Stack Engineer">Senior Full Stack Engineer</option>
+                          <option value="Frontend Developer">Frontend Developer</option>
+                          <option value="Full Stack Developer">Full Stack Developer</option>
+                          <option value="Backend Engineer">Backend Engineer</option>
+                          <option value="AI / Machine Learning Engineer">AI / Machine Learning Engineer</option>
+                          <option value="UI/UX Designer">UI/UX Designer</option>
+                          <option value="DevOps Specialist">DevOps Specialist</option>
+                          <option value="QA / Test Automation Engineer">QA / Test Automation Engineer</option>
+                          <option value="Digital Marketing Executive">Digital Marketing Executive</option>
+                          <option value="Human Resources (HR) Executive">Human Resources (HR) Executive</option>
+                        </>
+                      )}
                       <option value="Other">Other (Custom Role / Title)</option>
                     </select>
                   </div>

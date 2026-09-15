@@ -32,6 +32,8 @@ export async function POST(request: Request) {
       annualCtc,
       noticePeriod,
       hrName,
+      hrPhone,
+      responsibilities,
     } = await request.json();
 
     const isObjectId = /^[0-9a-fA-F]{24}$/.test(candidateId);
@@ -60,6 +62,16 @@ export async function POST(request: Request) {
       .replace(/\s*\((paid|unpaid)\)\s*$/gi, '')
       .trim();
 
+    let parsedResponsibilities: string[] | undefined = undefined;
+    if (Array.isArray(responsibilities) && responsibilities.length > 0) {
+      parsedResponsibilities = responsibilities.map((r: any) => String(r).trim()).filter(Boolean);
+    } else if (typeof responsibilities === 'string' && responsibilities.trim()) {
+      parsedResponsibilities = responsibilities
+        .split('\n')
+        .map(r => r.replace(/^[-*•\d.]+\s*/, '').trim())
+        .filter(Boolean);
+    }
+
     const offerDetails = {
       candidateName: candidate.name,
       candidateAddress: candidateAddress || 'Lucknow, Uttar Pradesh, 226028',
@@ -81,6 +93,8 @@ export async function POST(request: Request) {
       annualCtc: annualCtc ? parseFloat(annualCtc) : undefined,
       noticePeriod,
       hrName: hrName || 'Aditya Gupta',
+      hrPhone: hrPhone || '+91 72379 00686',
+      responsibilities: parsedResponsibilities && parsedResponsibilities.length > 0 ? parsedResponsibilities : undefined,
     };
 
     // Render real PDF Buffer
