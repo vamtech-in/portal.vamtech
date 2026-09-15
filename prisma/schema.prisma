@@ -127,3 +127,19 @@ model Announcement {
   authorName  String   @default("VAMTech HR")
   createdAt   DateTime @default(now())
 }
+
+model JobPosting {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  type         String   // "INTERN" | "FULL_TIME"
+  department   String   @default("Engineering")
+  location     String   @default("Lucknow / Remote")
+  stipendOrCtc String?  // e.g. "₹6,000–₹12,000 / month" or "₹6–12 LPA"
+  duration     String?  // e.g. "3–6 Months" or "Full-Time"
+  description  String?
+  isOpen       Boolean  @default(true)
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+

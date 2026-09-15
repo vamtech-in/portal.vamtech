@@ -24,6 +24,54 @@ export default function ApplyPage() {
   const [error, setError] = useState('');
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
 
+  // Dynamic Open Roles loaded from database
+  const [openRoles, setOpenRoles] = useState<any[]>([]);
+  const [loadingRoles, setLoadingRoles] = useState(true);
+  const [selectedTrack, setSelectedTrack] = useState<'ALL' | 'INTERN' | 'FULL_TIME'>('ALL');
+
+  React.useEffect(() => {
+    const fetchRoles = async () => {
+      try {
+        const res = await fetch('/api/public/roles');
+        if (res.ok) {
+          const data = await res.json();
+          if (data.roles && data.roles.length > 0) {
+            setOpenRoles(data.roles);
+
+            if (typeof window !== 'undefined') {
+              const params = new URLSearchParams(window.location.search);
+              const urlRole = params.get('role');
+              const urlType = params.get('type')?.toUpperCase();
+
+              if (urlType === 'INTERN' || urlType === 'FULL_TIME') {
+                setSelectedTrack(urlType);
+              }
+
+              if (urlRole) {
+                const match = data.roles.find(
+                  (r: any) => r.title.toLowerCase() === urlRole.toLowerCase()
+                );
+                if (match) {
+                  setFormData((prev) => ({ ...prev, roleApplied: match.title }));
+                  setSelectedTrack(match.type);
+                  return;
+                }
+              }
+
+              // Set default to first role
+              setFormData((prev) => ({ ...prev, roleApplied: data.roles[0].title }));
+            }
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load open roles', e);
+      } finally {
+        setLoadingRoles(false);
+      }
+    };
+    fetchRoles();
+  }, []);
+
   const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -194,7 +242,7 @@ export default function ApplyPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Phone Number *</label>
+                  <label className="block text-[#111111] font-semibold mb-1">Phone Number *</label>
                   <input
                     type="tel"
                     required
@@ -206,35 +254,155 @@ export default function ApplyPage() {
                 </div>
 
                 <div>
-                  <label className="block text-slate-700 font-semibold mb-1">Role Applying For *</label>
-                  <select
-                    value={formData.roleApplied}
-                    onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
-                    className="w-full glass-input px-3.5 py-2.5 rounded-xl bg-white"
-                  >
-                    <option value="Senior Full Stack Engineer">Senior Full Stack Engineer</option>
-                    <option value="Frontend Developer">Frontend Developer</option>
-                    <option value="Backend Engineer">Backend Engineer</option>
-                    <option value="UI/UX Designer">UI/UX Designer</option>
-                    <option value="AI / Machine Learning Engineer">AI / Machine Learning Engineer</option>
-                    <option value="DevOps Specialist">DevOps Specialist</option>
-                    <option value="Full Stack Development Intern (Paid)">Full Stack Development Intern (Paid)</option>
-                    <option value="Full Stack Development Intern (Unpaid)">Full Stack Development Intern (Unpaid)</option>
-                    <option value="Software Engineer Intern (Paid)">Software Engineer Intern (Paid)</option>
-                    <option value="Research Intern (Unpaid)">Research Intern (Unpaid)</option>
-                  </select>
+                  <label className="block text-[#111111] font-semibold mb-1">LinkedIn Profile (Optional)</label>
+                  <input
+                    type="url"
+                    placeholder="https://linkedin.com/in/yourprofile"
+                    value={formData.linkedin}
+                    onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
+                    className="w-full glass-input px-3.5 py-2.5 rounded-xl"
+                  />
                 </div>
               </div>
 
-              <div>
-                <label className="block text-slate-700 font-semibold mb-1">LinkedIn Profile (Optional)</label>
-                <input
-                  type="url"
-                  placeholder="https://linkedin.com/in/yourprofile"
-                  value={formData.linkedin}
-                  onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-                  className="w-full glass-input px-3.5 py-2.5 rounded-xl"
-                />
+              {/* Role Selection with Track Filter */}
+              <div className="space-y-3 pt-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="block text-[#111111] font-bold text-xs">
+                      Choose Your Position *
+                    </label>
+                    <span className="text-[11px] text-[#6F6F6A]">
+                      Select whether you are applying for an <strong>Internship</strong> or <strong>Full-Time</strong> position.
+                    </span>
+                  </div>
+
+                  {/* Track Pills */}
+                  <div className="inline-flex rounded-xl bg-[#F5F4EF] p-1 border border-[rgba(17,17,17,0.08)] text-xs font-semibold">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTrack('ALL')}
+                      className={`px-3 py-1 rounded-lg transition ${
+                        selectedTrack === 'ALL'
+                          ? 'bg-white text-[#111111] shadow-xs'
+                          : 'text-[#6F6F6A] hover:text-[#111111]'
+                      }`}
+                    >
+                      All ({openRoles.length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTrack('INTERN')}
+                      className={`px-3 py-1 rounded-lg transition ${
+                        selectedTrack === 'INTERN'
+                          ? 'bg-white text-[#FF4400] shadow-xs'
+                          : 'text-[#6F6F6A] hover:text-[#111111]'
+                      }`}
+                    >
+                      🎓 Internships ({openRoles.filter((r) => r.type === 'INTERN').length})
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedTrack('FULL_TIME')}
+                      className={`px-3 py-1 rounded-lg transition ${
+                        selectedTrack === 'FULL_TIME'
+                          ? 'bg-white text-sky-800 shadow-xs'
+                          : 'text-[#6F6F6A] hover:text-[#111111]'
+                      }`}
+                    >
+                      💼 Full-Time ({openRoles.filter((r) => r.type === 'FULL_TIME').length})
+                    </button>
+                  </div>
+                </div>
+
+                {/* Interactive Cards Grid */}
+                {loadingRoles ? (
+                  <div className="p-4 rounded-xl border border-[rgba(17,17,17,0.08)] bg-slate-50 text-center text-xs text-[#6F6F6A]">
+                    Loading open positions...
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1">
+                    {openRoles
+                      .filter((r) => selectedTrack === 'ALL' || r.type === selectedTrack)
+                      .map((role) => {
+                        const isSelected = formData.roleApplied === role.title;
+                        return (
+                          <div
+                            key={role.id || role.title}
+                            onClick={() => setFormData({ ...formData, roleApplied: role.title })}
+                            className={`p-3 rounded-xl border-2 transition cursor-pointer text-left flex items-start gap-2.5 ${
+                              isSelected
+                                ? 'border-[#FF4400] bg-[#FFF4EE]/60 shadow-xs'
+                                : 'border-[rgba(17,17,17,0.08)] bg-white hover:border-[rgba(17,17,17,0.18)] hover:bg-[#F5F4EF]/30'
+                            }`}
+                          >
+                            <div className="pt-0.5 shrink-0">
+                              <div
+                                className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                                  isSelected
+                                    ? 'border-[#FF4400] bg-[#FF4400] text-white'
+                                    : 'border-slate-300 bg-white'
+                                }`}
+                              >
+                                {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                              </div>
+                            </div>
+
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-1.5 mb-1">
+                                <span
+                                  className={`text-[9.5px] font-mono font-bold uppercase px-1.5 py-0.2 rounded ${
+                                    role.type === 'INTERN'
+                                      ? 'bg-orange-100/70 text-[#FF4400]'
+                                      : 'bg-sky-100/70 text-sky-800'
+                                  }`}
+                                >
+                                  {role.type === 'INTERN' ? 'Intern' : 'Full-Time'}
+                                </span>
+                                <span className="text-[10px] text-[#6F6F6A] font-medium truncate">
+                                  {role.department}
+                                </span>
+                              </div>
+
+                              <span className="text-xs font-bold text-[#111111] block leading-tight">
+                                {role.title}
+                              </span>
+
+                              <div className="flex items-center gap-2 mt-1.5 text-[10px] text-[#6F6F6A]">
+                                {role.stipendOrCtc && (
+                                  <span className="font-semibold text-[#111111] font-mono">
+                                    {role.stipendOrCtc}
+                                  </span>
+                                )}
+                                {role.duration && (
+                                  <span>&bull; {role.duration}</span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                )}
+
+                {/* Dropdown Sync */}
+                <div className="pt-1">
+                  <label className="block text-[11px] text-[#6F6F6A] font-semibold mb-1">
+                    Selected Position Dropdown:
+                  </label>
+                  <select
+                    value={formData.roleApplied}
+                    onChange={(e) => setFormData({ ...formData, roleApplied: e.target.value })}
+                    className="w-full glass-input px-3 py-2 text-xs rounded-xl bg-white font-semibold"
+                  >
+                    {openRoles.map((role) => (
+                      <option key={role.id || role.title} value={role.title}>
+                        {role.type === 'INTERN' ? '🎓 [Intern] ' : '💼 [Full-Time] '}
+                        {role.title} {role.stipendOrCtc ? `(${role.stipendOrCtc})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
 
               <div>

@@ -48,6 +48,16 @@ export default function OfferLetterGeneratorPage({ params }: { params: Promise<{
     setResponsibilitiesText(defaultBullets.join('\n'));
   };
 
+  const [searchType, setSearchType] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const t = params.get('type')?.toUpperCase();
+      if (t) setSearchType(t);
+    }
+  }, []);
+
   useEffect(() => {
     const fetchCandidate = async () => {
       try {
@@ -60,9 +70,15 @@ export default function OfferLetterGeneratorPage({ params }: { params: Promise<{
             const cleanRole = (cand.roleApplied || '').replace(/\s*\((paid|unpaid)\)\s*$/gi, '').trim();
             setDesignation(cleanRole || cand.roleApplied);
 
-            // Auto-select template based on role or intern reference
+            // Respect explicit URL parameter type or auto-detect from role/ref
             let detectedType: 'UNPAID_INTERNSHIP' | 'PAID_INTERNSHIP' | 'FULL_TIME' = 'FULL_TIME';
-            if (cand.roleApplied?.toLowerCase().includes('(unpaid)') || cand.roleApplied?.toLowerCase().includes('unpaid intern')) {
+            if (searchType === 'PAID_INTERNSHIP' || searchType === 'INTERN') {
+              detectedType = 'PAID_INTERNSHIP';
+            } else if (searchType === 'UNPAID_INTERNSHIP' || searchType === 'UNPAID') {
+              detectedType = 'UNPAID_INTERNSHIP';
+            } else if (searchType === 'FULL_TIME') {
+              detectedType = 'FULL_TIME';
+            } else if (cand.roleApplied?.toLowerCase().includes('(unpaid)') || cand.roleApplied?.toLowerCase().includes('unpaid intern')) {
               detectedType = 'UNPAID_INTERNSHIP';
             } else if (cand.refNumber?.includes('INT') || cand.roleApplied?.toLowerCase().includes('intern')) {
               detectedType = 'PAID_INTERNSHIP';
@@ -81,7 +97,7 @@ export default function OfferLetterGeneratorPage({ params }: { params: Promise<{
       }
     };
     fetchCandidate();
-  }, [candidateId]);
+  }, [candidateId, searchType]);
 
   const handleGenerateAndSend = async (e: React.FormEvent) => {
     e.preventDefault();

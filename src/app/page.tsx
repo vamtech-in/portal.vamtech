@@ -33,20 +33,34 @@ export default async function HomePage() {
             </div>
 
             {/* Public Action Buttons */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
+            <div className="flex flex-wrap items-center gap-3 pt-2">
               <Link
                 href="/apply"
-                className="btn-orange px-8 py-4 text-sm font-semibold flex items-center gap-2.5 transition group"
+                className="btn-orange px-7 py-3.5 text-sm font-semibold flex items-center gap-2 transition group"
               >
-                <span>Apply for Open Roles</span>
+                <span>View Open Roles</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
               </Link>
 
               <Link
-                href="/status"
-                className="btn-navy px-8 py-4 text-sm font-semibold transition"
+                href="/apply?type=PAID_INTERNSHIP"
+                className="bg-white border border-[rgba(17,17,17,0.14)] hover:border-[#FF4400] text-[#111111] px-5 py-3.5 rounded-full text-sm font-semibold transition hover:bg-[#FFF4EE]"
               >
-                Track Status (VT-2026-XXX)
+                🎓 Internships
+              </Link>
+
+              <Link
+                href="/apply?type=FULL_TIME"
+                className="bg-white border border-[rgba(17,17,17,0.14)] hover:border-[#FF4400] text-[#111111] px-5 py-3.5 rounded-full text-sm font-semibold transition hover:bg-[#FFF4EE]"
+              >
+                💼 Full-Time
+              </Link>
+
+              <Link
+                href="/status"
+                className="btn-navy px-6 py-3.5 text-sm font-semibold transition"
+              >
+                Track Status
               </Link>
             </div>
 

@@ -36,6 +36,7 @@ export default function CandidatePipelinePage() {
     sendSelectionEmail: false,
   });
   const [candidateTrack, setCandidateTrack] = useState<'INTERN' | 'FULL_TIME'>('INTERN');
+  const [offerModalCandidate, setOfferModalCandidate] = useState<any | null>(null);
 
   const resetAddModal = () => {
     setShowAddModal(false);
@@ -139,6 +140,12 @@ export default function CandidatePipelinePage() {
 
       if (res.ok) {
         fetchCandidates();
+        if (newStatus === 'Selected') {
+          const target = candidates.find((c) => c.id === candidateId || c.refNumber === candidateId);
+          if (target) {
+            setOfferModalCandidate(target);
+          }
+        }
       }
     } catch (e) {
       console.error('Status change error', e);
@@ -338,13 +345,22 @@ export default function CandidatePipelinePage() {
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         {cand.status === 'Selected' || cand.status === 'Offer Sent' ? (
-                          <Link
-                            href={`/hr/offer-letter/${cand.id}`}
-                            className="btn-orange text-white font-bold px-3 py-1.5 rounded-lg text-[11px] flex items-center gap-1 transition shadow-sm"
-                          >
-                            <Send className="w-3.5 h-3.5" />
-                            <span>{cand.status === 'Offer Sent' ? 'Re-Issue Offer' : 'Generate Offer'}</span>
-                          </Link>
+                          <div className="inline-flex items-center gap-1.5 bg-[#FFF4EE] border border-orange-200/90 p-1 rounded-xl shadow-xs">
+                            <Link
+                              href={`/hr/offer-letter/${cand.id}?type=PAID_INTERNSHIP`}
+                              className="btn-orange text-white font-semibold px-2.5 py-1 rounded-lg text-[10.5px] flex items-center gap-1 transition"
+                              title="Generate Internship Offer Letter"
+                            >
+                              <span>🎓 Intern Offer</span>
+                            </Link>
+                            <Link
+                              href={`/hr/offer-letter/${cand.id}?type=FULL_TIME`}
+                              className="bg-[#111111] hover:bg-[#262626] text-white font-semibold px-2.5 py-1 rounded-lg text-[10.5px] flex items-center gap-1 transition"
+                              title="Generate Full-Time Employment Offer Letter"
+                            >
+                              <span>💼 Full-Time Offer</span>
+                            </Link>
+                          </div>
                         ) : null}
 
                         {cand.status === 'Joined' || cand.status === 'Offer Sent' || cand.status === 'Selected' ? (
@@ -526,15 +542,25 @@ export default function CandidatePipelinePage() {
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 w-full">
                   <Link
-                    href={`/hr/offer-letter/${createdCandidate.id}`}
-                    className="w-full sm:w-auto btn-orange text-white font-bold px-5 py-2.5 rounded-xl text-xs flex items-center justify-center gap-2 shadow transition"
+                    href={`/hr/offer-letter/${createdCandidate.id}?type=PAID_INTERNSHIP`}
+                    className="btn-orange text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition"
                   >
-                    <Send className="w-4 h-4" />
-                    <span>Generate & Send Offer Letter Now</span>
+                    <Send className="w-3.5 h-3.5" />
+                    <span>🎓 Generate Intern Offer</span>
                   </Link>
 
+                  <Link
+                    href={`/hr/offer-letter/${createdCandidate.id}?type=FULL_TIME`}
+                    className="bg-[#111111] hover:bg-[#262626] text-white font-bold px-4 py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow transition"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>💼 Generate Full-Time Offer</span>
+                  </Link>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
                   <button
                     type="button"
                     onClick={() => {
@@ -787,6 +813,89 @@ export default function CandidatePipelinePage() {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Offer Letter Selection Prompt Modal */}
+      {offerModalCandidate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border border-slate-200 rounded-2xl w-full max-w-lg p-6 space-y-5 shadow-2xl">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
+              <div>
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-orange-50 border border-orange-200 text-[10px] font-mono font-bold text-[#FF4400] uppercase mb-1">
+                  Candidate Selected
+                </div>
+                <h3 className="text-lg font-bold text-[#111111]">
+                  Generate Offer Letter for {offerModalCandidate.name}
+                </h3>
+                <p className="text-xs text-[#6F6F6A] font-mono mt-0.5">
+                  {offerModalCandidate.refNumber} &bull; {offerModalCandidate.roleApplied}
+                </p>
+              </div>
+              <button
+                onClick={() => setOfferModalCandidate(null)}
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-600 leading-relaxed">
+              Select which offer letter format to generate. All terms, responsibilities, and calculations will pre-populate automatically:
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Option 1: Intern Offer */}
+              <Link
+                href={`/hr/offer-letter/${offerModalCandidate.id}?type=PAID_INTERNSHIP`}
+                onClick={() => setOfferModalCandidate(null)}
+                className="p-4 rounded-xl border-2 border-orange-200 hover:border-[#FF4400] bg-[#FFF4EE]/60 hover:bg-[#FFF4EE] text-left transition flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="text-2xl mb-2">🎓</div>
+                  <h4 className="text-xs font-bold text-[#111111] group-hover:text-[#FF4400] transition">
+                    Internship Offer Letter
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Monthly stipend (e.g. ₹5,000–₹12,000/mo), fixed term (3–6 months), training outcomes.
+                  </p>
+                </div>
+                <span className="mt-3 text-[11px] font-bold text-[#FF4400] flex items-center gap-1">
+                  <span>Open Intern Template</span> &rarr;
+                </span>
+              </Link>
+
+              {/* Option 2: Full-Time Offer */}
+              <Link
+                href={`/hr/offer-letter/${offerModalCandidate.id}?type=FULL_TIME`}
+                onClick={() => setOfferModalCandidate(null)}
+                className="p-4 rounded-xl border-2 border-slate-200 hover:border-[#111111] bg-slate-50 hover:bg-slate-100 text-left transition flex flex-col justify-between group"
+              >
+                <div>
+                  <div className="text-2xl mb-2">💼</div>
+                  <h4 className="text-xs font-bold text-[#111111] group-hover:text-[#111111] transition">
+                    Full-Time Employment Offer
+                  </h4>
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    Annual CTC (e.g. ₹6–16 LPA), probation terms, notice period, and company benefits.
+                  </p>
+                </div>
+                <span className="mt-3 text-[11px] font-bold text-[#111111] flex items-center gap-1">
+                  <span>Open Full-Time Template</span> &rarr;
+                </span>
+              </Link>
+            </div>
+
+            <div className="pt-2 flex justify-end">
+              <button
+                type="button"
+                onClick={() => setOfferModalCandidate(null)}
+                className="px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+              >
+                Decide Later
+              </button>
+            </div>
           </div>
         </div>
       )}

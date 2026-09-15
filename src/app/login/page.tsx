@@ -31,8 +31,8 @@ export default function LoginPage() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      router.push(data.redirectTo || '/dashboard');
-      router.refresh();
+      // Full navigation ensures browser sends newly set HttpOnly cookie reliably
+      window.location.href = data.redirectTo || '/dashboard';
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
     } finally {
