@@ -63,74 +63,74 @@ export default function HRAnnouncementsPage() {
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-slate-400 text-sm">Loading announcements editor...</div>;
+    return <div className="text-center py-12 text-[#64748b] text-sm">Loading announcements editor...</div>;
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
-          <Megaphone className="w-6 h-6 text-vamgold-400" />
-          <span>Announcements & Holiday Calendar Editor</span>
+        <h1 className="text-2xl font-black text-[#0f172a] flex items-center gap-2">
+          <Megaphone className="w-6 h-6 text-[#FF4400]" />
+          <span>Announcements &amp; Holiday Calendar Editor</span>
         </h1>
-        <p className="text-xs text-slate-400 mt-1">Publish company-wide notices or register official holidays on the portal.</p>
+        <p className="text-xs text-[#64748b] mt-1">Publish company-wide notices or register official holidays on the portal.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-xs">
         {/* Form Column */}
-        <div className="glass-panel p-6 space-y-4">
-          <h2 className="text-sm font-bold text-white border-b border-vamnavy-800 pb-3 flex items-center gap-2">
-            <Plus className="w-4 h-4 text-vamgold-400" />
+        <div className="bg-white border border-[#cbd5e1] rounded-2xl p-6 space-y-4 shadow-sm">
+          <h2 className="text-sm font-extrabold text-[#0f172a] border-b border-[#e2e8f0] pb-3 flex items-center gap-2">
+            <Plus className="w-4 h-4 text-[#FF4400]" />
             <span>Publish Announcement / Holiday</span>
           </h2>
 
           <form onSubmit={handleCreate} className="space-y-4">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">Title *</label>
+              <label className="block text-[#334155] font-semibold mb-1">Title *</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. Q4 Company Strategy Townhall"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                className="w-full bg-[#f8fafc] border border-[#cbd5e1] focus:bg-white focus:border-[#FF4400] text-[#0f172a] placeholder:text-[#94a3b8] px-3.5 py-2.5 rounded-xl outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">Announcement Body / Content *</label>
+              <label className="block text-[#334155] font-semibold mb-1">Announcement Body / Content *</label>
               <textarea
                 rows={4}
                 required
                 placeholder="Provide complete notice details..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                className="w-full bg-[#f8fafc] border border-[#cbd5e1] focus:bg-white focus:border-[#FF4400] text-[#0f172a] placeholder:text-[#94a3b8] px-3.5 py-2.5 rounded-xl outline-none transition"
               />
             </div>
 
-            <div className="flex items-center gap-2 bg-vamnavy-950 p-3 rounded-lg border border-vamnavy-800">
+            <div className="flex items-center gap-2 bg-[#f8fafc] p-3 rounded-xl border border-[#cbd5e1]">
               <input
                 type="checkbox"
                 id="isHolidayCheck"
                 checked={isHoliday}
                 onChange={(e) => setIsHoliday(e.target.checked)}
-                className="w-4 h-4 accent-vamgold-500 rounded cursor-pointer"
+                className="w-4 h-4 accent-[#FF4400] rounded cursor-pointer"
               />
-              <label htmlFor="isHolidayCheck" className="text-slate-300 font-semibold cursor-pointer">
+              <label htmlFor="isHolidayCheck" className="text-[#334155] font-semibold cursor-pointer">
                 This is an Official Company Holiday
               </label>
             </div>
 
             {isHoliday && (
               <div>
-                <label className="block text-slate-300 font-semibold mb-1">Holiday Date *</label>
+                <label className="block text-[#334155] font-semibold mb-1">Holiday Date *</label>
                 <input
                   type="date"
                   required
                   value={holidayDate}
                   onChange={(e) => setHolidayDate(e.target.value)}
-                  className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                  className="w-full bg-[#f8fafc] border border-[#cbd5e1] focus:bg-white focus:border-[#FF4400] text-[#0f172a] px-3.5 py-2.5 rounded-xl outline-none transition"
                 />
               </div>
             )}
@@ -138,7 +138,7 @@ export default function HRAnnouncementsPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-vamgold-500 hover:bg-vamgold-400 disabled:opacity-50 text-vamnavy-950 font-bold py-3 rounded-lg text-xs flex items-center justify-center gap-2 transition"
+              className="w-full btn-orange text-white font-bold py-3 rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition disabled:opacity-50 cursor-pointer"
             >
               <Send className="w-4 h-4" />
               <span>{submitting ? 'Publishing...' : 'Publish Announcement'}</span>
@@ -148,25 +148,31 @@ export default function HRAnnouncementsPage() {
 
         {/* Existing Announcements & Holidays */}
         <div className="lg:col-span-2 space-y-4">
-          <h2 className="text-sm font-bold text-white border-b border-vamnavy-800 pb-3">Active Portal Announcements</h2>
+          <h2 className="text-sm font-extrabold text-[#0f172a] border-b border-[#e2e8f0] pb-3">Active Portal Announcements</h2>
 
           <div className="space-y-3">
-            {announcements.map((item) => (
-              <div key={item.id} className="glass-panel p-5 space-y-2 border-vamnavy-700">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-white">{item.title}</h3>
-                    {item.isHoliday && (
-                      <span className="text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded">
-                        HOLIDAY ({item.holidayDate})
-                      </span>
-                    )}
-                  </div>
-                  <span className="text-[10px] font-mono text-slate-400">{new Date(item.createdAt).toLocaleDateString()}</span>
-                </div>
-                <p className="text-xs text-slate-300 leading-relaxed">{item.content}</p>
+            {announcements.length === 0 ? (
+              <div className="bg-white border border-[#cbd5e1] rounded-2xl p-8 text-center text-[#64748b]">
+                No announcements published yet.
               </div>
-            ))}
+            ) : (
+              announcements.map((item) => (
+                <div key={item.id} className="bg-white border border-[#cbd5e1] hover:border-[#94a3b8] rounded-2xl p-5 space-y-2 shadow-sm transition">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-base font-bold text-[#0f172a]">{item.title}</h3>
+                      {item.isHoliday && (
+                        <span className="text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-md">
+                          HOLIDAY ({item.holidayDate})
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-[11px] font-mono text-[#64748b]">{new Date(item.createdAt).toLocaleDateString()}</span>
+                  </div>
+                  <p className="text-xs text-[#475569] leading-relaxed whitespace-pre-wrap">{item.content}</p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

@@ -22,7 +22,49 @@ export async function GET(request: Request) {
       phone: true,
       mustResetPassword: true,
       tasks: {
-        select: { id: true, title: true, status: true },
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          dueDate: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      attendanceLogs: {
+        select: {
+          id: true,
+          date: true,
+          status: true,
+          checkIn: true,
+          checkOut: true,
+        },
+        orderBy: { date: 'desc' },
+        take: 20,
+      },
+      workHistory: {
+        select: {
+          id: true,
+          projectTitle: true,
+          description: true,
+          skills: true,
+          dateCompleted: true,
+          createdAt: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      },
+      leaveRequests: {
+        select: {
+          id: true,
+          leaveType: true,
+          startDate: true,
+          endDate: true,
+          status: true,
+          reason: true,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 5,
       },
     },
   });

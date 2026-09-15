@@ -125,44 +125,44 @@ export default function HRDocumentManagementPage() {
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <div>
-        <h1 className="text-2xl font-extrabold text-white flex items-center gap-2">
-          <FileSpreadsheet className="w-6 h-6 text-vamgold-400" />
-          <span>HR Document Management & Vault Uploader</span>
+        <h1 className="text-2xl font-black text-[#0f172a] flex items-center gap-2">
+          <FileSpreadsheet className="w-6 h-6 text-[#FF4400]" />
+          <span>HR Document Management &amp; Vault Uploader</span>
         </h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <p className="text-xs text-[#64748b] mt-1">
           Issue payslips, appointment contracts, and ID proofs to specific employees with strict server-side access controls.
         </p>
       </div>
 
-      <div className="bg-vamnavy-900/80 border border-emerald-500/30 p-4 rounded-xl flex items-center gap-3 text-xs text-emerald-300">
-        <ShieldCheck className="w-5 h-5 shrink-0 text-emerald-400" />
+      <div className="bg-emerald-50 border border-emerald-300 p-4 rounded-2xl flex items-center gap-3 text-xs text-emerald-900">
+        <ShieldCheck className="w-5 h-5 shrink-0 text-emerald-600" />
         <span>
           <strong>Access Control Policy:</strong> Documents are stored in access-controlled storage (`/api/documents/[id]/download`) with signed URLs. Only the recipient employee or HR admin can view/download.
         </span>
       </div>
 
-      <div className="glass-panel p-6 sm:p-8 space-y-6">
-        <h3 className="text-sm font-bold text-white border-b border-vamnavy-800 pb-3">Upload / Issue New Confidential Document</h3>
+      <div className="bg-white border border-[#cbd5e1] rounded-2xl p-6 sm:p-8 space-y-6 shadow-sm">
+        <h3 className="text-sm font-extrabold text-[#0f172a] border-b border-[#e2e8f0] pb-3">Upload / Issue New Confidential Document</h3>
 
         {successMsg && (
-          <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 rounded-lg text-xs font-bold">
+          <div className="p-4 bg-emerald-50 border border-emerald-300 text-emerald-900 rounded-xl text-xs font-bold">
             {successMsg}
           </div>
         )}
 
         {errorMsg && (
-          <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-lg text-xs font-bold">
+          <div className="p-4 bg-rose-50 border border-rose-300 text-rose-800 rounded-xl text-xs font-bold">
             {errorMsg}
           </div>
         )}
 
         <form onSubmit={handleUpload} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Select Target Employee *</label>
+            <label className="block text-[#334155] font-semibold mb-1">Select Target Employee *</label>
             <select
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
-              className="w-full glass-input px-3.5 py-2.5 rounded-lg bg-vamnavy-900"
+              className="w-full bg-[#f8fafc] border border-[#cbd5e1] focus:bg-white focus:border-[#FF4400] text-[#0f172a] px-3.5 py-2.5 rounded-xl outline-none transition"
             >
               {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
@@ -174,23 +174,23 @@ export default function HRDocumentManagementPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">Document Title *</label>
+              <label className="block text-[#334155] font-semibold mb-1">Document Title *</label>
               <input
                 type="text"
                 required
                 placeholder="e.g. September 2026 Salary Payslip"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full glass-input px-3.5 py-2.5 rounded-lg"
+                className="w-full bg-[#f8fafc] border border-[#cbd5e1] focus:bg-white focus:border-[#FF4400] text-[#0f172a] placeholder:text-[#94a3b8] px-3.5 py-2.5 rounded-xl outline-none transition"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-semibold mb-1">Document Type *</label>
+              <label className="block text-[#334155] font-semibold mb-1">Document Type *</label>
               <select
                 value={docType}
                 onChange={(e) => setDocType(e.target.value)}
-                className="w-full glass-input px-3.5 py-2.5 rounded-lg bg-vamnavy-900"
+                className="w-full bg-[#f8fafc] border border-[#cbd5e1] focus:bg-white focus:border-[#FF4400] text-[#0f172a] px-3.5 py-2.5 rounded-xl outline-none transition"
               >
                 <option value="Payslip">Payslip</option>
                 <option value="Offer Letter">Offer Letter</option>
@@ -202,7 +202,7 @@ export default function HRDocumentManagementPage() {
           </div>
 
           <div>
-            <label className="block text-slate-300 font-semibold mb-1">Upload File (PDF / Image) *</label>
+            <label className="block text-[#334155] font-semibold mb-1">Upload File (PDF / Image) *</label>
             <input
               type="file"
               ref={fileInputRef}
@@ -210,14 +210,14 @@ export default function HRDocumentManagementPage() {
               accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
               className="hidden"
             />
-            <div className={`border border-dashed p-4 rounded-lg flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${fileUrl ? 'border-emerald-500/50 bg-emerald-950/20' : 'border-vamnavy-700 bg-vamnavy-950/60'}`}>
+            <div className={`border border-dashed p-4 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition ${fileUrl ? 'border-emerald-500 bg-emerald-50' : 'border-[#cbd5e1] bg-[#f8fafc]'}`}>
               <div className="flex items-center gap-3">
-                <FileText className={`w-6 h-6 ${fileUrl ? 'text-emerald-400' : 'text-sky-400'}`} />
+                <FileText className={`w-6 h-6 ${fileUrl ? 'text-emerald-600' : 'text-[#FF4400]'}`} />
                 <div>
-                  <span className="text-slate-200 font-medium block">
+                  <span className="text-[#0f172a] font-bold block">
                     {fileUrl ? (fileName || 'Document File Attached') : 'Choose document file to upload'}
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-[11px] text-[#64748b]">
                     {fileUrl ? `${fileSize || 'Uploaded'} • Ready to issue` : 'PDF, DOC, DOCX, or Image up to 25MB'}
                   </span>
                 </div>
@@ -226,7 +226,7 @@ export default function HRDocumentManagementPage() {
                 type="button"
                 disabled={uploading}
                 onClick={() => fileInputRef.current?.click()}
-                className={`text-xs px-3.5 py-2 rounded font-semibold transition flex items-center justify-center gap-1.5 ${fileUrl ? 'bg-emerald-600 hover:bg-emerald-500 text-white' : 'bg-vamnavy-800 hover:bg-vamnavy-700 text-slate-200'}`}
+                className={`text-xs px-4 py-2 rounded-xl font-bold transition flex items-center justify-center gap-1.5 cursor-pointer ${fileUrl ? 'bg-emerald-600 hover:bg-emerald-700 text-white' : 'bg-[#0f172a] hover:bg-black text-white'}`}
               >
                 {uploading ? (
                   <>
@@ -252,7 +252,7 @@ export default function HRDocumentManagementPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full bg-vamgold-500 hover:bg-vamgold-400 disabled:opacity-50 text-vamnavy-950 font-bold py-3 rounded-lg text-xs flex items-center justify-center gap-2 transition"
+              className="w-full btn-orange text-white font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 transition shadow-sm cursor-pointer disabled:opacity-50"
             >
               <Upload className="w-4 h-4" />
               <span>{submitting ? 'Issuing Document...' : 'Issue Document to Employee Vault'}</span>

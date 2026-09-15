@@ -35,7 +35,7 @@ export default function Sidebar({ role }: SidebarProps) {
   const hrLinks = [
     { href: '/hr', label: 'Candidate Pipeline', icon: Users },
     { href: '/hr/roles', label: 'Job Openings', icon: Briefcase },
-    { href: '/hr/employees', label: 'Employee Directory', icon: Award },
+    { href: '/hr/employees', label: 'Employees & Activity', icon: Award },
     { href: '/hr/documents', label: 'Document Manager', icon: FileSpreadsheet },
     { href: '/hr/leaves', label: 'Leave Approvals', icon: CalendarCheck },
     { href: '/hr/announcements', label: 'Announcements Editor', icon: Megaphone },
