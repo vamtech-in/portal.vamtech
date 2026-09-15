@@ -17,12 +17,11 @@ export default function VamtechLogo({ className = '', showSubtext = true, size =
     <div className={`flex items-center gap-3 font-display select-none ${className}`}>
       {/* Official VAMTech Logo Image */}
       <img
-        src="https://www.vamtech.in/images/vamtech-logo.png"
-        alt="VAMTech Pvt Ltd"
+        src="/vamtech-logo-new.png"
+        alt="VAMTech"
         className={`${imageHeights[size]} w-auto object-contain shrink-0`}
         onError={(e) => {
-          // Fallback to local image copy if offline
-          (e.target as HTMLImageElement).src = '/images/vamtech-logo.png';
+          (e.target as HTMLImageElement).src = '/images/vamtech-logo-new.png';
         }}
       />
       {showSubtext && (

@@ -82,47 +82,47 @@ export default function ApplyPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#F5F4EF] text-[#111111] selection:bg-[#FF4400] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition mb-6"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#6F6F6A] hover:text-[#111111] transition mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
 
         {submittedRef ? (
-          <div className="glass-panel p-8 text-center space-y-6 animate-fade-in border-emerald-200 bg-white">
-            <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
+          <div className="glass-panel p-8 text-center space-y-6 animate-fade-in border-[rgba(17,17,17,0.08)] bg-white">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mx-auto border border-emerald-200">
               <CheckCircle2 className="w-8 h-8" />
             </div>
 
             <div>
-              <h2 className="font-display text-2xl font-black text-[#0f172a]">Application Submitted Successfully!</h2>
-              <p className="text-sm text-slate-600 mt-2">
+              <h2 className="text-2xl font-black text-[#111111]">Application Submitted Successfully!</h2>
+              <p className="text-sm text-[#6F6F6A] mt-2">
                 Thank you for applying to VAMTech Pvt Ltd. Your application record has been registered.
               </p>
             </div>
 
-            <div className="bg-slate-50 border border-slate-200 p-6 rounded-2xl max-w-md mx-auto">
-              <span className="text-xs uppercase font-mono font-bold text-slate-500 tracking-wider block">
+            <div className="bg-[#F5F4EF] border border-[rgba(17,17,17,0.08)] p-6 rounded-2xl max-w-md mx-auto">
+              <span className="text-xs uppercase font-mono font-bold text-[#6F6F6A] tracking-wider block">
                 Your Candidate Reference Number
               </span>
-              <span className="text-3xl font-extrabold font-mono text-[#f9572a] block mt-2">
+              <span className="text-3xl font-extrabold font-mono text-[#FF4400] block mt-2">
                 {submittedRef}
               </span>
-              <p className="text-xs text-slate-500 mt-3">
-                This number has been emailed to <strong className="text-slate-800">{formData.email}</strong>.
+              <p className="text-xs text-[#6F6F6A] mt-3">
+                This number has been emailed to <strong className="text-[#111111]">{formData.email}</strong>.
               </p>
             </div>
 
             <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href={`/status?ref=${submittedRef}&email=${encodeURIComponent(formData.email)}`}
-                className="w-full sm:w-auto btn-orange font-bold px-6 py-3 rounded-xl text-sm transition"
+                className="w-full sm:w-auto btn-orange font-semibold px-6 py-3 rounded-full text-sm transition"
               >
                 Track Application Status
               </Link>
@@ -139,18 +139,22 @@ export default function ApplyPage() {
                     coverNote: '',
                   });
                 }}
-                className="w-full sm:w-auto bg-slate-100 hover:bg-slate-200 border border-slate-200 text-slate-700 font-semibold px-6 py-3 rounded-xl text-sm transition"
+                className="w-full sm:w-auto bg-[#F5F4EF] hover:bg-[#ECEAE4] border border-[rgba(17,17,17,0.1)] text-[#111111] font-semibold px-6 py-3 rounded-full text-sm transition"
               >
                 Submit Another Application
               </button>
             </div>
           </div>
         ) : (
-          <div className="glass-panel p-6 sm:p-8 space-y-6 bg-white border-slate-200">
-            <div className="border-b border-slate-200 pb-4">
-              <h1 className="font-display text-2xl font-black text-[#0f172a]">VAMTech Job Application</h1>
-              <p className="text-xs text-slate-500 mt-1">
-                Fill out the form below to receive your unique Candidate Reference Number (<span className="font-mono text-slate-900 font-bold">VT-YYYY-XXX</span>).
+          <div className="glass-panel p-6 sm:p-8 space-y-6 bg-white border-[rgba(17,17,17,0.08)]">
+            <div className="border-b border-[rgba(17,17,17,0.08)] pb-4">
+              <div className="editorial-badge mb-3 shadow-xs">
+                <span className="w-2 h-2 rounded-full bg-[#FF4400] animate-pulse" />
+                <span>ONLINE CANDIDATE APPLICATION</span>
+              </div>
+              <h1 className="text-2xl font-black text-[#111111]">VAMTech Job Application</h1>
+              <p className="text-xs text-[#6F6F6A] mt-1">
+                Fill out the form below to receive your unique Candidate Reference Number (<span className="font-mono text-[#111111] font-bold">VT-YYYY-XXX</span>).
               </p>
             </div>
 

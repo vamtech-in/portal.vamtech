@@ -243,19 +243,19 @@ function StatusContent() {
 
 export default function StatusPage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#F5F4EF] text-[#111111] selection:bg-[#FF4400] selection:text-white">
       <Navbar />
 
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-10">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 transition mb-6"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#6F6F6A] hover:text-[#111111] transition mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Home</span>
         </Link>
 
-        <Suspense fallback={<div className="text-center py-10 text-slate-400 text-sm">Loading application status lookup...</div>}>
+        <Suspense fallback={<div className="text-center py-10 text-[#6F6F6A] text-sm">Loading application status lookup...</div>}>
           <StatusContent />
         </Suspense>
       </main>

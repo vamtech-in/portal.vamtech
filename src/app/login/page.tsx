@@ -41,26 +41,26 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-900 selection:bg-vamorange-500 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[#F5F4EF] text-[#111111] selection:bg-[#FF4400] selection:text-white">
       <Navbar />
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md space-y-6">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-slate-900 transition"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-[#6F6F6A] hover:text-[#111111] transition"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Portal Home</span>
           </Link>
 
-          <div className="glass-panel p-8 space-y-6 shadow-xl border-slate-200">
+          <div className="glass-panel p-8 space-y-6 shadow-xl border-[rgba(17,17,17,0.08)] bg-white">
             <div className="text-center space-y-3 flex flex-col items-center">
               <VamtechLogo size="lg" showSubtext={false} />
               <div className="pt-2">
-                <h1 className="font-display text-2xl font-black text-[#0f172a]">Staff Portal Login</h1>
-                <p className="text-xs text-slate-500 mt-1">
-                  Authorized access for employees and HR administrators on <span className="font-mono text-slate-700">career.vamtech.in</span>
+                <h1 className="text-2xl font-black text-[#111111]">Staff Portal Login</h1>
+                <p className="text-xs text-[#6F6F6A] mt-1">
+                  Authorized access for employees and HR administrators on <span className="font-mono text-[#111111] font-bold">career.vamtech.in</span>
                 </p>
               </div>
             </div>
@@ -74,11 +74,11 @@ export default function LoginPage() {
 
             <form onSubmit={handleLogin} className="space-y-4 text-xs">
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">
+                <label className="block text-[#111111] font-semibold mb-1">
                   Candidate ID or Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Mail className="w-4 h-4 text-[#9E9E98] absolute left-3.5 top-3" />
                   <input
                     type="text"
                     required
@@ -89,15 +89,14 @@ export default function LoginPage() {
                     className="w-full glass-input pl-10 pr-3.5 py-2.5 rounded-xl placeholder:normal-case font-mono placeholder:font-sans"
                   />
                 </div>
-                <p className="text-[10px] text-slate-400 mt-1">
-                  Enter your assigned Candidate / Intern Reference ID (e.g. <span className="font-mono font-semibold text-slate-600">VT-INT-2026-001</span> or <span className="font-mono font-semibold text-slate-600">VT-2026-001</span>) or official email.
-                </p>
               </div>
 
               <div>
-                <label className="block text-slate-700 font-semibold mb-1">Password</label>
+                <label className="block text-[#111111] font-semibold mb-1">
+                  Account Password
+                </label>
                 <div className="relative">
-                  <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3" />
+                  <Lock className="w-4 h-4 text-[#9E9E98] absolute left-3.5 top-3" />
                   <input
                     type="password"
                     required
@@ -112,7 +111,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-orange font-bold py-3.5 rounded-xl text-xs flex items-center justify-center gap-2 transition"
+                className="w-full btn-orange font-semibold py-3.5 rounded-full text-xs flex items-center justify-center gap-2 transition"
               >
                 {loading ? (
                   <span>Authenticating Session...</span>
@@ -125,10 +124,10 @@ export default function LoginPage() {
               </button>
             </form>
 
-            <div className="pt-4 border-t border-slate-100 text-center">
-              <span className="text-[11px] text-slate-500 block mb-1">Need access or assistance?</span>
-              <span className="text-[10px] text-slate-600 block font-medium">
-                Contact HR Admin at <strong className="text-[#0f172a] font-mono">contactvamtech@gmail.com</strong>
+            <div className="pt-4 border-t border-[rgba(17,17,17,0.08)] text-center">
+              <span className="text-[11px] text-[#6F6F6A] block mb-1">Need access or assistance?</span>
+              <span className="text-[10px] text-[#6F6F6A] block font-medium">
+                Contact HR Admin at <strong className="text-[#111111] font-mono">contactvamtech@gmail.com</strong>
               </span>
             </div>
           </div>

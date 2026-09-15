@@ -9,24 +9,35 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        canvas: '#F5F4EF',
+        surface: '#FFFFFF',
+        surfaceSubtle: '#ECEAE4',
+        dark: {
+          950: '#0a0a0a',
+          900: '#111111',
+          800: '#181818',
+          700: '#222222',
+          600: '#333333',
+        },
         vamnavy: {
           950: '#070d17',
-          900: '#0f172a', // VAMTech primary dark navy
-          800: '#1e293b',
-          700: '#334155',
-          600: '#475569',
-          50: '#f8fafc',
+          900: '#111111', // Updated to match vamtech.in primary dark
+          800: '#181818',
+          700: '#262626',
+          600: '#404040',
+          50: '#F5F4EF',
         },
         vamorange: {
-          500: '#f9572a', // VAMTech signature orange
-          600: '#e0461b',
-          400: '#ff6f47',
-          50: '#fff5f2',
+          500: '#FF4400', // VAMTech primary punch orange from vamtech.in
+          600: '#E63D00',
+          400: '#FF6026',
+          50: '#FFF4EE',
         },
       },
       fontFamily: {
-        sans: ['var(--font-inter)', 'system-ui', 'sans-serif'],
-        display: ['var(--font-outfit)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        display: ['var(--font-sans)', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        mono: ['var(--font-mono)', 'monospace'],
       },
     },
   },
