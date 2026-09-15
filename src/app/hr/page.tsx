@@ -127,7 +127,10 @@ export default function CandidatePipelinePage() {
   };
 
   useEffect(() => {
-    fetchCandidates();
+    const timer = setTimeout(() => {
+      fetchCandidates();
+    }, 250);
+    return () => clearTimeout(timer);
   }, [search, statusFilter, roleFilter]);
 
   const handleStatusChange = async (candidateId: string, newStatus: string) => {

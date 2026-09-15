@@ -13,6 +13,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,7 +24,7 @@ export default function LoginPage() {
       const res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identifier, password }),
+        body: JSON.stringify({ identifier: identifier.trim(), password: password.trim() }),
       });
 
       const data = await res.json();
@@ -31,11 +32,11 @@ export default function LoginPage() {
         throw new Error(data.error || 'Authentication failed');
       }
 
-      // Full navigation ensures browser sends newly set HttpOnly cookie reliably
-      window.location.href = data.redirectTo || '/dashboard';
+      setSuccess(true);
+      // Clean replace navigation ensures cookie is active and prevents back-button loops
+      window.location.replace(data.redirectTo || '/dashboard');
     } catch (err: any) {
       setError(err.message || 'Login failed. Please check your credentials.');
-    } finally {
       setLoading(false);
     }
   };
@@ -111,10 +112,22 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full btn-orange font-semibold py-3.5 rounded-full text-xs flex items-center justify-center gap-2 transition"
+                className={`w-full font-semibold py-3.5 rounded-full text-xs flex items-center justify-center gap-2 transition ${
+                  success
+                    ? 'bg-emerald-600 text-white cursor-wait'
+                    : 'btn-orange'
+                }`}
               >
-                {loading ? (
-                  <span>Authenticating Session...</span>
+                {success ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Authenticated! Entering Workspace...</span>
+                  </>
+                ) : loading ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <span>Verifying Credentials...</span>
+                  </>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4" />

@@ -45,6 +45,19 @@ export async function GET(request: Request) {
     whereClause.roleApplied = role;
   }
 
+  if (id) {
+    const singleCandidate = await db.candidate.findFirst({
+      where: whereClause,
+      include: {
+        offerLetters: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+        },
+      },
+    });
+    return NextResponse.json({ candidates: singleCandidate ? [singleCandidate] : [] });
+  }
+
   const candidates = await db.candidate.findMany({
     where: whereClause,
     include: {

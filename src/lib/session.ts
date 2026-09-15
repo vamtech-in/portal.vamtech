@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 
 const SECRET_KEY = process.env.JWT_SECRET || 'vamtech_portal_secure_jwt_secret_key_2026_99887766';
 const key = new TextEncoder().encode(SECRET_KEY);
@@ -43,18 +44,34 @@ export async function decrypt(token: string): Promise<UserSession | null> {
 /**
  * Create HTTP-only session cookie
  */
-export async function createSession(user: UserSession) {
+export async function createSession(
+  user: UserSession,
+  response?: NextResponse,
+  isSecureRequest?: boolean
+) {
   const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
   const sessionToken = await encrypt(user);
 
-  const cookieStore = await cookies();
-  cookieStore.set(SESSION_COOKIE_NAME, sessionToken, {
+  const cookieOptions = {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
+    secure: isSecureRequest ?? false,
     expires: expiresAt,
-    sameSite: 'lax',
+    sameSite: 'lax' as const,
     path: '/',
-  });
+  };
+
+  try {
+    const cookieStore = await cookies();
+    cookieStore.set(SESSION_COOKIE_NAME, sessionToken, cookieOptions);
+  } catch (err) {
+    // May throw if response has already started or not mutable in some contexts
+  }
+
+  if (response) {
+    response.cookies.set(SESSION_COOKIE_NAME, sessionToken, cookieOptions);
+  }
+
+  return sessionToken;
 }
 
 /**
